@@ -1,6 +1,6 @@
 # VZ Projects Solar – Website
 
-> **Version 3 („Apple“)**: Navy/Weiß/Schwarz (kein Gold), Bilder und Videos im Navy-Look, Systemschrift (SF Pro auf Apple-Geräten), Kacheln und Pill-Buttons. Startseiten-Animationen aus Version 2 (Video, Wort-Reveal, Scroll-Manifest, Ablauf-Tabs, Deutschlandkarte). Katalog und Anfrageprozess wie Version 1.
+> **Version 3 („Apple“)**: Navy/Weiß/Schwarz (kein Gold), Systemschrift (SF Pro auf Apple-Geräten), Kacheln und Pill-Buttons. Startseiten-Animationen aus Version 2 (Video, Wort-Reveal, Scroll-Manifest, Ablauf-Tabs, Deutschlandkarte). Katalog und Anfrageprozess wie Version 1.
 
 Statische Astro-Website für die VZ Projects Solar GmbH (PV-Großhandel, B2B).
 

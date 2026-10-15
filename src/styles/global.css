@@ -323,8 +323,8 @@ body::before { display: none; }
 ::selection { background: rgba(42, 90, 168, 0.25); color: var(--ink); }
 :focus-visible { outline: 2px solid #0071e3; outline-offset: 3px; border-radius: 8px; }
 
-.display { font-weight: 600; font-size: clamp(2.6rem, 6.2vw, 5rem); line-height: 1.05; letter-spacing: -0.042em; }
-.h2 { font-weight: 600; font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; letter-spacing: -0.035em; }
+.display { font-weight: 600; font-size: clamp(2.8rem, 7vw, 5.8rem); line-height: 1.04; letter-spacing: -0.045em; }
+.h2 { font-weight: 600; font-size: clamp(2.2rem, 4.6vw, 3.9rem); line-height: 1.06; letter-spacing: -0.038em; }
 .h3 { font-weight: 600; font-size: clamp(1.3rem, 1.8vw, 1.6rem); line-height: 1.16; letter-spacing: -0.022em; }
 .display em, .h2 em, .h3 em, .grad {
   font-style: normal;
