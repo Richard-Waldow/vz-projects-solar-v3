@@ -1,0 +1,205 @@
+---
+import { u } from '../lib/url';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { nav } from '../data/site';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.slice(base.length).replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="hdr" data-header>
+  <div class="hdr-island">
+    <a href={u("/")} class="hdr-logo" aria-label="Startseite VZ Projects Solar"><Logo size="sm" /></a>
+
+    <nav class="hdr-nav" aria-label="Hauptnavigation">
+      {nav.map((item) => (
+        <a href={u(item.href)} class:list={['hdr-link', { 'is-active': isActive(item.href) }]}>{item.label}</a>
+      ))}
+      <a href={u("/shop")} class:list={['hdr-link', { 'is-active': isActive('/shop') }]}>Shop <span class="soon">Bald</span></a>
+    </nav>
+
+    <div class="hdr-actions">
+      <button class="hdr-list" type="button" data-list-open aria-label="Anfrageliste öffnen">
+        <Icon name="list" />
+        <span class="hdr-count" data-list-count>0</span>
+      </button>
+      <a href={u("/anfrage")} class="btn btn--sm hdr-cta">Anfrage stellen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+      <button class="burger" type="button" aria-label="Menü öffnen" aria-expanded="false" aria-controls="menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="menu" data-menu aria-hidden="true">
+  <nav class="menu-nav" aria-label="Mobile Navigation">
+    <a href={u("/")} style="--i:0">Start</a>
+    {nav.map((item, i) => <a href={u(item.href)} style={`--i:${i + 1}`}>{item.label}</a>)}
+    <a href={u("/shop")} style={`--i:${nav.length + 1}`}>Shop <span class="soon">Bald</span></a>
+    <a href={u("/anfrage")} style={`--i:${nav.length + 2}`}>Anfrage stellen</a>
+  </nav>
+  <div class="menu-foot" style={`--i:${nav.length + 3}`}>
+    <span class="mono">B2B · Ausschließlich für gewerbliche Kunden</span>
+  </div>
+</div>
+
+<style>
+  .hdr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    transition: transform 450ms var(--ease);
+  }
+  .hdr.is-hidden { transform: translateY(-100%); }
+  .hdr-island { display: flex; align-items: center; gap: 1rem; max-width: 1100px; height: 52px; margin: 0 auto; padding: 0 var(--gutter); }
+  .hdr-logo { display: flex; padding: 4px 0; }
+  .hdr-nav { display: flex; gap: 0.15rem; margin-left: auto; }
+  .hdr-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 980px;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.8);
+    transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+  }
+  .hdr-link:hover { color: #000; }
+  .hdr-link.is-active { color: #000; font-weight: 500; }
+  .soon {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.45rem;
+    border-radius: 999px;
+    background: var(--sun-3);
+    color: #6d4c12;
+  }
+  .hdr-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .hdr-list {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    transition: background-color 0.4s var(--ease), transform 160ms var(--ease-ui);
+  }
+  .hdr-list:hover { background: rgba(0, 0, 0, 0.09); }
+  .hdr-list:active { transform: scale(0.95); }
+  .hdr-list :global(svg) { width: 18px; height: 18px; }
+  .hdr-count {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--sun);
+    color: var(--ink);
+    font-size: 0.66rem;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+    transform: scale(0);
+    transition: transform 0.5s var(--ease);
+  }
+  .hdr-count.has-items { transform: scale(1); }
+  .hdr-count.bump { animation: bump 0.5s var(--ease); }
+  @keyframes bump { 40% { transform: scale(1.35); } }
+
+  .burger { display: none; position: relative; width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent; }
+  .burger span { position: absolute; left: 13px; right: 13px; height: 1.5px; background: var(--ink); transition: transform 0.6s var(--ease), top 0.6s var(--ease); }
+  .burger span:first-child { top: 17px; }
+  .burger span:last-child { top: 24px; }
+  .burger[aria-expanded='true'] span:first-child { top: 20.5px; transform: rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { top: 20.5px; transform: rotate(-45deg); }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 120px 28px 40px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 350ms var(--ease-ui), visibility 0s linear 350ms;
+  }
+  .menu.is-open { opacity: 1; visibility: visible; transition: opacity 350ms var(--ease-ui), visibility 0s; }
+  .menu-nav { display: grid; gap: 0.2rem; }
+  .menu-nav a, .menu-foot {
+    font-family: var(--f-display);
+    font-size: clamp(2.2rem, 9vw, 3.4rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 400ms var(--ease-ui), transform 450ms var(--ease-ui);
+  }
+  .menu-foot { font-family: var(--f-ui); font-size: 0.8rem; color: var(--muted); }
+  .menu.is-open .menu-nav a, .menu.is-open .menu-foot { opacity: 1; transform: none; transition-delay: calc(60ms + var(--i) * 40ms); }
+  .menu-nav .soon { font-family: var(--f-ui); }
+
+  @media (max-width: 1000px) {
+    .hdr-nav { display: none; }
+    .hdr-actions { margin-left: auto; }
+    .burger { display: block; }
+  }
+  @media (max-width: 560px) {
+    .hdr-cta { display: none; }
+    .hdr-island { padding-left: 16px; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const header = document.querySelector<HTMLElement>('[data-header]');
+
+  const setMenu = (open: boolean) => {
+    burger?.setAttribute('aria-expanded', String(open));
+    burger?.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+    menu?.classList.toggle('is-open', open);
+    menu?.setAttribute('aria-hidden', String(!open));
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+  };
+  burger?.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
+  // Navigation beim Runterscrollen ausblenden, beim Hochscrollen zeigen (rAF-gedrosselt)
+  let lastY = window.scrollY;
+  let ticking = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    const menuOpen = menu?.classList.contains('is-open');
+    header?.classList.toggle('is-hidden', !menuOpen && y > 240 && y > lastY + 4);
+    if (y < lastY - 4 || y < 240) header?.classList.remove('is-hidden');
+    lastY = y;
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+</script>

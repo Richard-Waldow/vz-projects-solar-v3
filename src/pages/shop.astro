@@ -1,0 +1,109 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProductArt from '../components/ProductArt.astro';
+
+const features = [
+  ['bag', 'Händlerpreise', 'Ihre individuellen Konditionen, sichtbar nach Login.'],
+  ['grid', 'Live-Verfügbarkeit', 'Was lieferbar ist, sehen Sie direkt am Produkt.'],
+  ['doc', 'Datenblätter & Zertifikate', 'Alle Dokumente zum Download, immer aktuell.'],
+  ['list', 'Bestellhistorie', 'Nachbestellen mit einem Klick, Projektlisten speichern.'],
+];
+---
+
+<Base title="Online-Shop" description="Der VZ Projects Online-Shop für Fachpartner startet bald.">
+  <section class="shop on-dark">
+    <div class="shop-glow" aria-hidden="true"></div>
+    <div class="container shop-grid">
+      <div class="shop-copy reveal">
+        <span class="eyebrow">Online-Shop · Coming soon</span>
+        <h1 class="display">Bestellen,<br />wann es <em>passt.</em></h1>
+        <p class="lead">
+          Der VZ Projects Online-Shop für registrierte Fachpartner ist in Vorbereitung. Tragen Sie sich ein und erfahren Sie als Erste vom Start.
+        </p>
+        <form class="notify" data-notify novalidate>
+          <label for="notify-mail" class="sr-only">E-Mail-Adresse</label>
+          <input id="notify-mail" type="email" placeholder="ihre@firma.de" required autocomplete="email" />
+          <button type="submit" class="btn btn--sun">Benachrichtigen <span class="btn-icon"><Icon name="arrow-up-right" /></span></button>
+        </form>
+        <p class="notify-ok rise" data-notify-ok hidden><Icon name="check" /> Danke. Wir melden uns, sobald der Shop live ist.</p>
+        <p class="notify-hint">Bis dahin: <a href={u("/anfrage")}>Projekt anfragen</a> oder <a href={u("/produkte")}>Katalog durchsuchen</a>.</p>
+      </div>
+
+      <div class="shop-stack reveal" style="--d:160ms" aria-hidden="true">
+        {(['module', 'speicher', 'wechselrichter'] as const).map((c, i) => (
+          <div class="stack-card" style={`--i:${i}`}>
+            <ProductArt category={c} seed={i} cover />
+            <div class="stack-meta"><span></span><span></span><em>Preis nach Login</em></div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="container feats">
+      {features.map(([icon, t, d], i) => (
+        <div class="feat reveal" style={`--d:${i * 80}ms`}>
+          <Icon name={icon} />
+          <strong>{t}</strong>
+          <span>{d}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .shop { position: relative; min-height: 100dvh; padding: clamp(132px, 15vw, 180px) 0 clamp(96px, 12vw, 160px); background: var(--ink); color: var(--white); overflow: hidden; }
+  .shop-glow { position: absolute; right: -15%; top: -10%; width: 70vw; aspect-ratio: 1; max-width: 1000px; background: radial-gradient(circle, rgba(200, 149, 58, 0.3), transparent 60%); pointer-events: none; }
+  .shop-grid { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(40px, 6vw, 96px); align-items: center; }
+  .shop-copy { display: grid; gap: 1.6rem; justify-items: start; }
+  .shop .display em { color: var(--sun-2); }
+  .shop .lead { color: rgba(255, 255, 255, 0.68); }
+  .notify { display: flex; gap: 6px; width: min(520px, 100%); padding: 6px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 1px var(--line-inv); }
+  .notify input { flex: 1; min-width: 0; padding: 0 1.2rem; border: 0; background: transparent; color: var(--white); font-size: 16px; }
+  .notify input::placeholder { color: rgba(255, 255, 255, 0.4); }
+  .notify input:focus { outline: none; }
+  .notify.has-error { box-shadow: inset 0 0 0 1.5px #e0866f; }
+  .notify-ok { animation: rise 400ms var(--ease-out) both; display: flex; align-items: center; gap: 0.6rem; margin: 0; color: var(--sun-2); }
+  .notify-ok :global(svg) { width: 18px; height: 18px; }
+  .notify-hint { margin: 0; font-size: 0.86rem; color: rgba(255, 255, 255, 0.5); }
+  .notify-hint a { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+  .shop-stack { position: relative; height: clamp(380px, 42vw, 520px); }
+  .stack-card { position: absolute; left: 50%; top: 50%; width: min(340px, 78%); padding: 6px 6px 16px; border-radius: 1.6rem; background: rgba(255, 255, 255, 0.96); box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6); transform: translate(calc(-50% + (var(--i) - 1) * 70px), calc(-50% + (var(--i) - 1) * 40px)) rotate(calc((var(--i) - 1) * 5deg)); transition: transform 0.9s var(--ease); }
+  .stack-card :global(.art) { border-radius: 1.2rem; aspect-ratio: 4 / 3; height: auto; }
+  .shop-stack:hover .stack-card { transform: translate(calc(-50% + (var(--i) - 1) * 110px), calc(-50% + (var(--i) - 1) * 30px)) rotate(calc((var(--i) - 1) * 8deg)); }
+  .stack-meta { display: grid; gap: 8px; padding: 14px 12px 0; }
+  .stack-meta span { height: 8px; border-radius: 4px; background: var(--paper-3); }
+  .stack-meta span:nth-child(2) { width: 60%; background: var(--paper-2); }
+  .stack-meta em { justify-self: start; margin-top: 4px; padding: 0.3rem 0.7rem; border-radius: 999px; background: var(--sun-3); color: #6d4c12; font-style: normal; font-size: 0.72rem; font-weight: 500; }
+  .feats { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: clamp(64px, 8vw, 112px); }
+  .feat { display: grid; gap: 0.5rem; padding: 24px; border-radius: var(--r-lg); background: rgba(255, 255, 255, 0.04); box-shadow: inset 0 0 0 1px var(--line-inv); font-size: 0.86rem; color: rgba(255, 255, 255, 0.6); }
+  .feat :global(svg) { width: 22px; height: 22px; color: var(--sun-2); margin-bottom: 0.4rem; }
+  .feat strong { color: var(--white); font-weight: 500; font-size: 1rem; }
+  @media (max-width: 900px) {
+    .shop-grid { grid-template-columns: 1fr; }
+    .feats { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .notify { flex-direction: column; border-radius: 1.4rem; }
+    .notify input { min-height: 48px; }
+    .feats { grid-template-columns: 1fr; }
+    .shop-stack { height: 340px; }
+  }
+</style>
+
+<script>
+  const f = document.querySelector<HTMLFormElement>('[data-notify]')!;
+  const ok = document.querySelector<HTMLElement>('[data-notify-ok]')!;
+  f.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = f.querySelector('input')!;
+    const valid = /^\S+@\S+\.\S+$/.test(input.value);
+    f.classList.toggle('has-error', !valid);
+    if (!valid) { input.focus(); return; }
+    // DEMO: Anbindung an Newsletter-/CRM-System folgt
+    f.hidden = true;
+    ok.hidden = false;
+  });
+</script>

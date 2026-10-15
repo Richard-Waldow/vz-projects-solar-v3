@@ -1,0 +1,118 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { company, stats, showPlaceholderNote } from '../data/site';
+
+const values = [
+  ['handshake', 'Herstellerunabhängig', 'Wir verkaufen, was zum Projekt passt. Unsere Empfehlung hängt an Technik und Konditionen, nicht an Lagerbeständen.'],
+  ['bolt', 'Schnell entschieden', 'Kurze Wege, klare Zuständigkeiten. Wer bei uns anruft, spricht mit jemandem, der entscheiden kann.'],
+  ['shield', 'Verlässliche Ware', 'Ausschließlich Original-Herstellerware über autorisierte Bezugswege, mit voller Herstellergarantie.'],
+  ['grid', 'Systemdenken', 'Module, Wechselrichter, Speicher und Montage greifen ineinander. Wir prüfen die Kompatibilität, bevor das Angebot rausgeht.'],
+];
+---
+
+<Base title="Über uns" description="VZ Projects Solar GmbH: herstellerunabhängiger PV-Großhandel unter der Leitung von Moritz von Ziegner.">
+  <PageHero
+    eyebrow="Über uns"
+    title="Großhandel mit<br/><em>Haltung.</em>"
+    lead="VZ Projects Solar ist ein herstellerunabhängiger PV-Großhandel. Wir verbinden die führenden Hersteller mit den Unternehmen, die Deutschlands Energiewende auf die Dächer und Flächen bringen."
+  />
+
+  <section class="container story">
+    <div class="story-img reveal">
+      <div class="bezel"><div class="bezel-core"><img src={u("/img/aerial.jpg")} alt="Solarmodule aus der Vogelperspektive" loading="lazy" /></div></div>
+    </div>
+    <div class="story-copy reveal" style="--d:120ms">
+      <span class="eyebrow">Unsere Geschichte</span>
+      <h2 class="h2">Aus der Branche.<br /><em>Für die Branche.</em></h2>
+      <p>
+        Gegründet von {company.ceo}, der den PV-Großhandel seit Jahren aus der Praxis kennt: aus dem Partnervertrieb,
+        aus der Zusammenarbeit mit Energieversorgern und aus dem Aufbau von Vertriebsstrukturen in Deutschland.
+      </p>
+      <p>
+        Die Idee hinter VZ Projects ist einfach: ein Großhandel, der schlank organisiert ist, direkt beschafft und
+        jede Anfrage wie ein Projekt behandelt. Ohne Callcenter, ohne Umwege, mit Menschen, die wissen, wovon sie reden.
+      </p>
+    </div>
+  </section>
+
+  <section class="section values">
+    <div class="container">
+      <div class="values-head reveal">
+        <span class="eyebrow">Wofür wir stehen</span>
+        <h2 class="h2">Vier Versprechen.</h2>
+      </div>
+      <div class="values-grid">
+        {values.map(([icon, t, d], i) => (
+          <div class="value reveal" style={`--d:${i * 80}ms`}>
+            <span class="value-ico"><Icon name={icon} /></span>
+            <h3>{t}</h3>
+            <p>{d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container lead-person">
+    <div class="lp-card reveal on-dark">
+      <div class="lp-mono" aria-hidden="true">MvZ</div>
+      <div class="lp-copy">
+        <span class="eyebrow">Geschäftsführung</span>
+        <h2 class="h2">{company.ceo}</h2>
+        <p class="lead">„Unsere Kunden bauen unter Zeitdruck. Unser Job ist, dass das Material nie der Grund für eine Verzögerung ist.“</p>
+        {showPlaceholderNote && <p class="placeholder-note">Zitat-Entwurf, noch nicht freigegeben.</p>}
+        <div class="lp-links">
+          <a href={company.linkedin} target="_blank" rel="noopener" class="btn btn--ghost btn--sm">LinkedIn <span class="btn-icon"><Icon name="linkedin" /></span></a>
+          <a href={`mailto:${company.email}`} class="btn btn--sun btn--sm">E-Mail schreiben <span class="btn-icon"><Icon name="mail" /></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container numbers">
+    {stats.map((s, i) => (
+      <div class="num reveal" style={`--d:${i * 80}ms`}>
+        <strong><span class="countup"><span aria-hidden="true">{s.value}</span><span data-countup>{s.value}</span></span><span>{s.unit}</span></strong>
+        <span>{s.label}</span>
+      </div>
+    ))}
+    {showPlaceholderNote && <p class="placeholder-note">Kennzahlen sind Beispielwerte für die Präsentation.</p>}
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .story { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; padding-top: clamp(24px, 4vw, 48px); }
+  .story-img .bezel-core { aspect-ratio: 4 / 4.4; }
+  .story-img img { width: 100%; height: 100%; object-fit: cover; }
+  .story-copy { display: grid; gap: 1.4rem; justify-items: start; }
+  .story-copy p { margin: 0; color: var(--muted); font-size: 1.04rem; max-width: 56ch; }
+  .values-head { display: grid; gap: 1.4rem; justify-items: start; margin-bottom: clamp(40px, 5vw, 72px); }
+  .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .value { display: grid; gap: 0.8rem; align-content: start; padding: 28px; border-radius: var(--r-lg); background: var(--white); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft); }
+  .value-ico { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--sun-3); color: #6d4c12; }
+  .value-ico :global(svg) { width: 22px; height: 22px; }
+  .value h3 { margin: 0.4rem 0 0; font-family: var(--f-display); font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+  .value p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .lp-card { display: grid; grid-template-columns: auto 1fr; gap: clamp(28px, 5vw, 72px); align-items: center; padding: clamp(32px, 6vw, 72px); border-radius: 2.5rem; background: var(--ink); color: var(--white); }
+  .lp-mono { display: grid; place-items: center; width: clamp(140px, 18vw, 220px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 30% 25%, var(--navy-3), var(--navy)); color: var(--sun-2); font-family: var(--f-display); font-style: italic; font-size: clamp(3rem, 6vw, 4.6rem); font-weight: 600; box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.04), 0 0 0 22px rgba(255, 255, 255, 0.02); }
+  .lp-copy { display: grid; gap: 1.2rem; justify-items: start; }
+  .lp-copy .lead { color: rgba(255, 255, 255, 0.72); font-family: var(--f-display); font-style: italic; font-size: clamp(1.3rem, 2vw, 1.7rem); line-height: 1.35; }
+  .lp-links { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding-top: clamp(64px, 8vw, 104px); }
+  .num { display: grid; gap: 0.4rem; padding-top: 20px; border-top: 1px solid var(--line-2); }
+  .num strong { font-family: var(--f-display); font-weight: 500; font-size: clamp(2.6rem, 4.6vw, 4rem); line-height: 1; font-variant-numeric: lining-nums; font-feature-settings: 'lnum'; }
+  .num strong > span:last-child { font-size: 0.45em; color: var(--sun); margin-left: 0.1em; }
+  .num > span { font-size: 0.86rem; color: var(--muted); }
+  .numbers .placeholder-note { grid-column: 1 / -1; margin: 0; }
+  @media (max-width: 900px) {
+    .story, .lp-card { grid-template-columns: 1fr; }
+    .values-grid, .numbers { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) { .values-grid { grid-template-columns: 1fr; } }
+</style>

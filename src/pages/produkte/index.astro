@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Catalog from '../../components/Catalog.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { products, categories } from '../../data/products';
+import { brands } from '../../data/brands';
+---
+
+<Base title="Produktkatalog" description="Produktkatalog von VZ Projects Solar: Solarmodule, Wechselrichter, Batteriespeicher, Montagesysteme, Wallboxen, Wärmepumpen und Kabel führender Hersteller.">
+  <PageHero
+    eyebrow="Produktkatalog"
+    title="Das <em>Sortiment.</em>"
+    lead={`${products.length} Produktlinien von ${brands.length} Herstellern in ${categories.length} Kategorien. Stellen Sie Ihre Auswahl zusammen und senden Sie uns eine gesammelte Anfrage.`}
+  />
+  <section class="container cat-wrap">
+    <Catalog products={products} />
+  </section>
+  <CtaBand />
+</Base>
+
+<style>
+  .cat-wrap { position: relative; z-index: 3; }
+</style>

@@ -1,0 +1,107 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+
+const segments = [
+  {
+    id: 'stadtwerke',
+    eyebrow: 'Stadtwerke & Energieversorger',
+    title: 'Ihr PV-Angebot, <em>skalierbar</em> beliefert.',
+    text: 'Immer mehr Stadtwerke und Energieversorger bieten ihren Kunden PV-Anlagen, Speicher und Wallboxen an. Wir liefern die Hardware dahinter: standardisiert, planbar und mit festen Ansprechpartnern.',
+    img: u('/img/commercial.jpg'),
+    items: [
+      ['Paketierung', 'Wir bündeln Module, Wechselrichter, Speicher und Montagematerial zu festen Paketen, passend zu Ihren Endkundenprodukten.'],
+      ['Rahmenverträge', 'Planbare Konditionen über Abrufmengen, statt jedes Projekt neu zu verhandeln.'],
+      ['Partnernetz', 'Auf Wunsch beliefern wir direkt die Installationsbetriebe, mit denen Sie zusammenarbeiten.'],
+      ['Herstellerneutralität', 'Wir beraten herstellerunabhängig, auch beim Wechsel oder bei der Erweiterung Ihres Portfolios.'],
+    ],
+  },
+  {
+    id: 'projektentwickler',
+    eyebrow: 'Projektentwickler & EPC',
+    title: 'Vom Gewerbedach bis zum <em>Solarpark.</em>',
+    text: 'Bei Großprojekten zählen Preis pro Watt, Liefertreue und technische Abstimmung. Wir kalkulieren projektbezogen und denken bei Engpässen Alternativen gleich mit.',
+    img: u('/img/utility.jpg'),
+    items: [
+      ['Containerware', 'Module ab Containermenge, Wechselrichter und Unterkonstruktion aus einer Hand.'],
+      ['Stücklistenprüfung', 'Wir prüfen Ihre BOM auf Kompatibilität: Stringauslegung, Steckverbinder, Kabelquerschnitte.'],
+      ['Alternativen', 'Fällt ein Hersteller aus, schlagen wir technisch gleichwertigen Ersatz vor.'],
+      ['Lieferabrufe', 'Teillieferungen nach Bauabschnitt, avisiert und direkt auf die Baustelle.'],
+    ],
+  },
+  {
+    id: 'fachhandwerk',
+    eyebrow: 'Solarteure & Fachhandwerk',
+    title: 'Alles fürs Dach. <em>Aus einer Hand.</em>',
+    text: 'Für Installationsbetriebe sind wir der Großhändler mit dem kurzen Draht: abgestimmte Komponenten, verlässliche Ware und ein Ansprechpartner, der zurückruft.',
+    img: u('/img/roof.jpg'),
+    items: [
+      ['Komplettpakete', 'Modul, Wechselrichter, Speicher und Montagesystem für das Einfamilienhaus in einem Angebot.'],
+      ['Sektorkopplung', 'Wallbox und Wärmepumpe passend zum PV-System, inklusive Energiemanagement.'],
+      ['Original-Zubehör', 'MC4-Steckverbinder, Solarkabel und Kleinteile, damit nichts auf der Baustelle fehlt.'],
+      ['Persönlich', 'Kein Ticketsystem: Sie sprechen mit Menschen, die Ihre Projekte kennen.'],
+    ],
+  },
+];
+---
+
+<Base title="Für wen" description="Lösungen von VZ Projects Solar für Stadtwerke, Energieversorger, Projektentwickler, EPCs und das Fachhandwerk.">
+  <PageHero
+    eyebrow="Lösungen"
+    title="Drei Kundengruppen.<br/><em>Ein</em> Anspruch."
+    lead="Wir arbeiten für alle, die die Energiewende in Deutschland bauen. Was sie eint: Sie brauchen verlässliche Ware zu fairen Konditionen und einen Partner, der mitdenkt."
+  >
+    <nav class="jump reveal" style="--d:200ms" aria-label="Kundengruppen">
+      {segments.map((s) => <a href={`#${s.id}`}>{s.eyebrow} <Icon name="arrow-right" /></a>)}
+    </nav>
+  </PageHero>
+
+  {segments.map((s, i) => (
+    <section id={s.id} class:list={['seg', { 'seg--flip': i % 2 === 1 }]}>
+      <div class="container seg-grid">
+        <div class="seg-visual reveal">
+          <div class="bezel"><div class="bezel-core seg-img"><img src={s.img} alt="" loading="lazy" /></div></div>
+        </div>
+        <div class="seg-copy reveal" style="--d:120ms">
+          <span class="eyebrow">{s.eyebrow}</span>
+          <h2 class="h2" set:html={s.title} />
+          <p class="lead">{s.text}</p>
+          <dl class="seg-items">
+            {s.items.map(([t, d]) => (
+              <div><dt><Icon name="check" />{t}</dt><dd>{d}</dd></div>
+            ))}
+          </dl>
+          <a href={u("/anfrage")} class="btn">Projekt besprechen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <CtaBand />
+</Base>
+
+<style>
+  .jump { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 40px; }
+  .jump a { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1.2rem; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1px var(--line); font-size: 0.9rem; transition: background-color 0.4s var(--ease), color 0.4s var(--ease); }
+  .jump a:hover { background: var(--navy); color: var(--white); }
+  .jump :global(svg) { width: 14px; height: 14px; transform: rotate(90deg); }
+  .seg { padding: clamp(64px, 8vw, 120px) 0; scroll-margin-top: 80px; }
+  .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); align-items: center; }
+  .seg--flip .seg-visual { order: 2; }
+  .seg-img { aspect-ratio: 4 / 5; }
+  .seg-img img { width: 100%; height: 100%; object-fit: cover; }
+  .seg-copy { display: grid; gap: 1.5rem; justify-items: start; }
+  .seg-items { margin: 0.5rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem 1.6rem; }
+  .seg-items dt { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; margin-bottom: 0.3rem; }
+  .seg-items dt :global(svg) { width: 16px; height: 16px; color: var(--sun); }
+  .seg-items dd { margin: 0; font-size: 0.88rem; color: var(--muted); }
+  @media (max-width: 900px) {
+    .seg-grid { grid-template-columns: 1fr; }
+    .seg--flip .seg-visual { order: 0; }
+    .seg-img { aspect-ratio: 16 / 10; }
+  }
+  @media (max-width: 600px) { .seg-items { grid-template-columns: 1fr; } }
+</style>

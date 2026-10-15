@@ -1,0 +1,72 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { brands } from '../data/brands';
+import { products, categories, categoryById } from '../data/products';
+
+const groups = categories.map((c) => ({
+  category: c,
+  brands: brands.filter((b) => products.some((p) => p.brand === b.id && p.category === c.id)),
+}));
+const countFor = (id: string) => products.filter((p) => p.brand === id).length;
+const catsFor = (id: string) => [...new Set(products.filter((p) => p.brand === id).map((p) => categoryById[p.category].name))];
+---
+
+<Base title="Hersteller" description="Die Hersteller im Sortiment von VZ Projects Solar: Tier-1-Module, Wechselrichter, Speicher, Montagesysteme, Wallboxen, Wärmepumpen und Kabel.">
+  <PageHero
+    eyebrow={`${brands.length} Hersteller`}
+    title="Marken, denen<br/>Installateure <em>vertrauen.</em>"
+    lead="Wir sind herstellerunabhängig. Das heißt: Wir empfehlen, was zu Ihrem Projekt passt, und nicht, was im Lager liegt."
+  />
+
+  {groups.map((g, gi) => (
+    <section class="container grp">
+      <div class="grp-head reveal">
+        <span class="mono grp-n">{String(gi + 1).padStart(2, '0')}</span>
+        <h2 class="h3">{g.category.name}</h2>
+        <a href={u(`/produkte/${g.category.id}`)} class="link-arrow">Produkte ansehen <Icon name="arrow-right" /></a>
+      </div>
+      <ul class="grid">
+        {g.brands.map((b, i) => (
+          <li class="reveal" style={`--d:${(i % 4) * 60}ms`}>
+            <a href={u(`/produkte?marke=${b.id}`)} class="tile">
+              <span class="tile-logo"><BrandLogo id={b.id} /></span>
+              <span class="tile-meta">
+                <strong>{b.name}</strong>
+                <span>{b.origin} · {countFor(b.id)} {countFor(b.id) === 1 ? 'Produktlinie' : 'Produktlinien'}</span>
+                <span class="tile-cats">{catsFor(b.id).join(' · ')}</span>
+              </span>
+              <span class="tile-go"><Icon name="arrow-up-right" /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <CtaBand title="Ihr Wunschhersteller<br/><em>fehlt?</em>" text="Wir beschaffen auch Marken und Produkte außerhalb unseres Katalogs. Fragen Sie einfach an." />
+</Base>
+
+<style>
+  .grp { padding-top: clamp(48px, 6vw, 80px); }
+  .grp-head { display: flex; align-items: baseline; gap: 1rem; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+  .grp-head .link-arrow { margin-left: auto; }
+  .grp-n { color: var(--sun); }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 12px; }
+  .tile { position: relative; display: grid; gap: 1rem; height: 100%; padding: 6px 6px 18px; border-radius: var(--r-lg); background: rgba(0, 0, 0, 0.03); box-shadow: inset 0 0 0 1px var(--line); transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease); }
+  .tile:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--line-2), 0 24px 50px -30px rgba(0, 0, 0, 0.35); }
+  .tile-logo { display: flex; align-items: center; justify-content: center; height: 120px; padding: 28px 36px; border-radius: calc(var(--r-lg) - 6px); background: var(--white); }
+  .tile-logo :global(.blogo) { max-height: 46px; }
+  .tile-logo :global(.blogo-text) { font-size: 1.5rem; }
+  .tile-meta { display: grid; gap: 0.15rem; padding: 0 56px 0 12px; font-size: 0.82rem; color: var(--muted); }
+  .tile-meta strong { color: var(--ink); font-weight: 500; font-size: 0.98rem; }
+  .tile-cats { font-size: 0.74rem; }
+  .tile-go { position: absolute; right: 14px; bottom: 18px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--white); transition: transform 0.6s var(--ease), background-color 0.4s var(--ease), color 0.4s var(--ease); }
+  .tile-go :global(svg) { width: 14px; height: 14px; }
+  .tile:hover .tile-go { transform: rotate(45deg); background: var(--navy); color: var(--white); }
+  @media (max-width: 600px) { .grp-head { flex-wrap: wrap; } .grp-head .link-arrow { margin-left: 0; } }
+</style>

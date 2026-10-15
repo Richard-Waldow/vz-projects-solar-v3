@@ -1,0 +1,293 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { categories, products, categoryById } from '../data/products';
+import { brandById } from '../data/brands';
+import { company } from '../data/site';
+
+const productMap = Object.fromEntries(
+  products.map((p) => [p.slug, { slug: p.slug, name: p.name, brand: brandById[p.brand].name, category: categoryById[p.category].singular }]),
+);
+const customerTypes = ['Stadtwerk / Energieversorger', 'Projektentwickler / EPC', 'Solarteur / Fachhandwerk', 'Sonstiges Gewerbe'];
+const projectTypes = ['Wohngebäude', 'Gewerbedach', 'Freifläche', 'Rahmenvertrag'];
+---
+
+<Base title="Projektanfrage" description="Projektanfrage an VZ Projects Solar: Stückliste hochladen oder Produkte aus dem Katalog anfragen.">
+  <PageHero
+    eyebrow="Projektanfrage"
+    title="Erzählen Sie uns<br/>von Ihrem <em>Projekt.</em>"
+    lead="Je konkreter die Angaben, desto schneller das Angebot. Eine Stückliste ist ideal, ein paar Eckdaten reichen aber auch."
+  />
+
+  <section class="container rq">
+    <form class="rq-form reveal" novalidate data-form>
+      <div class="bezel"><div class="bezel-core rq-core">
+
+        <div class="rq-sec"><fieldset class="rq-block">
+          <legend><span class="rq-n">01</span> Wer fragt an?</legend>
+          <div class="pills" role="radiogroup" aria-label="Kundentyp">
+            {customerTypes.map((t, i) => (
+              <label class="pill-toggle"><input type="radio" name="kundentyp" value={t} checked={i === 0} /><span>{t}</span></label>
+            ))}
+          </div>
+        </fieldset></div>
+
+        <div class="rq-sec"><fieldset class="rq-block">
+          <legend><span class="rq-n">02</span> Projekt</legend>
+          <div class="pills" role="radiogroup" aria-label="Projektart">
+            {projectTypes.map((t, i) => (
+              <label class="pill-toggle"><input type="radio" name="projektart" value={t} checked={i === 0} /><span>{t}</span></label>
+            ))}
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="kwp">Anlagengröße (kWp)</label>
+              <input id="kwp" name="kwp" class="input" inputmode="decimal" placeholder="z. B. 750" />
+            </div>
+            <div class="field">
+              <label for="zeitraum">Geplanter Baubeginn</label>
+              <select id="zeitraum" name="zeitraum" class="select">
+                <option>So schnell wie möglich</option>
+                <option>In 1–3 Monaten</option>
+                <option>In 3–6 Monaten</option>
+                <option>Später als 6 Monate</option>
+                <option>Laufender Bedarf / Rahmenvertrag</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <span class="label">Benötigte Sortimente</span>
+            <div class="pills">
+              {categories.map((c) => (
+                <label class="pill-toggle"><input type="checkbox" name="sortimente" value={c.name} /><span>{c.name}</span></label>
+              ))}
+            </div>
+          </div>
+        </fieldset></div>
+
+        <div class="rq-sec"><fieldset class="rq-block">
+          <legend><span class="rq-n">03</span> Produkte & Stückliste</legend>
+          <div class="rq-list-wrap">
+            <div class="rq-list-head">
+              <span class="label">Aus dem Katalog</span>
+              <a href={u("/produkte")} class="link-arrow">Produkte hinzufügen <Icon name="arrow-right" /></a>
+            </div>
+            <ul class="rq-list" data-rq-list></ul>
+            <p class="rq-list-empty" data-rq-empty>Noch keine Produkte auf der Anfrageliste. Optional: Wählen Sie Produkte im Katalog oder laden Sie eine Stückliste hoch.</p>
+          </div>
+
+          <label class="drop" data-drop>
+            <input type="file" name="stueckliste" accept=".pdf,.xlsx,.xls,.csv,.doc,.docx" multiple data-file />
+            <span class="drop-ico"><Icon name="upload" /></span>
+            <span class="drop-text"><strong>Stückliste hochladen</strong><span>PDF, Excel oder CSV · per Klick oder Drag & Drop</span></span>
+            <span class="drop-files" data-files></span>
+          </label>
+
+          <div class="field">
+            <label for="nachricht">Nachricht</label>
+            <textarea id="nachricht" name="nachricht" class="textarea" placeholder="Dachart, Netzanschluss, Wunschhersteller, Lieferadresse oder alles, was wir wissen sollten."></textarea>
+          </div>
+        </fieldset></div>
+
+        <div class="rq-sec"><fieldset class="rq-block">
+          <legend><span class="rq-n">04</span> Kontakt</legend>
+          <div class="row-2">
+            <div class="field">
+              <label for="firma">Firma *</label>
+              <input id="firma" name="firma" class="input" autocomplete="organization" required />
+              <span class="error">Bitte Firmennamen angeben.</span>
+            </div>
+            <div class="field">
+              <label for="name">Ansprechpartner *</label>
+              <input id="name" name="name" class="input" autocomplete="name" required />
+              <span class="error">Bitte Namen angeben.</span>
+            </div>
+            <div class="field">
+              <label for="email">E-Mail *</label>
+              <input id="email" name="email" type="email" class="input" autocomplete="email" required />
+              <span class="error">Bitte eine gültige E-Mail-Adresse angeben.</span>
+            </div>
+            <div class="field">
+              <label for="telefon">Telefon</label>
+              <input id="telefon" name="telefon" type="tel" class="input" autocomplete="tel" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="ort">PLZ / Ort der Baustelle</label>
+            <input id="ort" name="ort" class="input" autocomplete="postal-code" />
+          </div>
+          <div class="field">
+            <label class="check"><input type="checkbox" name="datenschutz" required /> <span>Ich stimme zu, dass meine Angaben zur Bearbeitung der Anfrage verarbeitet werden. Details in der <a href={u("/datenschutz")}>Datenschutzerklärung</a>. *</span></label>
+            <span class="error">Bitte stimmen Sie der Verarbeitung zu.</span>
+          </div>
+        </fieldset></div>
+
+        <div class="rq-submit">
+          <p>Ausschließlich für gewerbliche Kunden. Ihre Anfrage ist unverbindlich.</p>
+          <button type="submit" class="btn">Anfrage senden <span class="btn-icon"><Icon name="arrow-up-right" /></span></button>
+        </div>
+      </div></div>
+    </form>
+
+    <div class="rq-done" data-done hidden tabindex="-1">
+      <div class="bezel rise"><div class="bezel-core rq-done-core">
+        <span class="done-ico"><Icon name="check" /></span>
+        <h2 class="h2">Danke, Ihre Anfrage <em>ist da.</em></h2>
+        <p class="lead">Wir melden uns mit Ihrem Angebot. Ihre Referenz: <strong class="mono" data-ref></strong></p>
+        <div class="done-actions">
+          <a href={u("/produkte")} class="btn btn--ghost">Weiter im Katalog <span class="btn-icon"><Icon name="arrow-right" /></span></a>
+          <a href={u("/")} class="btn">Zur Startseite <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+        </div>
+      </div></div>
+    </div>
+
+    <aside class="rq-aside reveal" style="--d:150ms">
+      <div class="aside-card">
+        <span class="eyebrow">Was dann passiert</span>
+        <ol>
+          <li><strong>Prüfung</strong><span>Wir prüfen Mengen, Kompatibilität und Verfügbarkeit bei unseren Herstellern.</span></li>
+          <li><strong>Angebot</strong><span>Sie erhalten ein schriftliches Angebot zu Projektkonditionen, auf Wunsch mit Alternativen.</span></li>
+          <li><strong>Abstimmung</strong><span>Lieferadresse, Abrufe und Avisierung stimmen wir persönlich mit Ihnen ab.</span></li>
+        </ol>
+      </div>
+      <div class="aside-card aside-contact">
+        <div class="ac-mono" aria-hidden="true">MvZ</div>
+        <div>
+          <strong>{company.ceo}</strong>
+          <span>Geschäftsführer</span>
+        </div>
+        <a href={`tel:${company.phoneHref}`}><Icon name="phone" />{company.phone}</a>
+        <a href={`mailto:${company.email}`}><Icon name="mail" />{company.email}</a>
+      </div>
+    </aside>
+  </section>
+
+  <script type="application/json" id="product-map" set:html={JSON.stringify(productMap)} />
+</Base>
+
+<style>
+  .rq { display: grid; grid-template-columns: 1fr 360px; gap: clamp(24px, 4vw, 56px); align-items: start; padding-bottom: var(--section); }
+  .rq-core { padding: clamp(22px, 4vw, 48px); display: grid; gap: clamp(32px, 4vw, 48px); }
+  .rq-block { border: 0; margin: 0; padding: 0; display: grid; gap: 1.2rem; min-width: 0; }
+  .rq-sec + .rq-sec { padding-top: clamp(32px, 4vw, 48px); border-top: 1px solid var(--line); }
+  legend { display: flex; align-items: center; gap: 0.8rem; padding: 0; margin-bottom: 0.4rem; font-family: var(--f-display); font-size: clamp(1.6rem, 2.6vw, 2.2rem); font-weight: 600; line-height: 1.1; }
+  .rq-n { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 500; color: var(--sun); padding: 0.3rem 0.55rem; border-radius: 999px; background: var(--sun-3); }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rq-list-wrap { display: grid; gap: 10px; padding: 16px; border-radius: 1.25rem; background: var(--paper); }
+  .rq-list-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .rq-list-head .label { font-size: 0.8rem; font-weight: 500; color: var(--navy-2); }
+  .rq-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .rq-list :global(.dl-item) { background: var(--white); }
+  .rq-list-empty { margin: 0; font-size: 0.85rem; color: var(--muted); }
+  .drop { position: relative; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; padding: 22px; border-radius: 1.25rem; border: 1.5px dashed var(--line-2); background: var(--white); cursor: pointer; transition: border-color 0.4s var(--ease), background-color 0.4s var(--ease); }
+  .drop:hover, .drop.is-over { border-color: var(--sun); background: #fffaf0; }
+  .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop-ico { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--sun-3); color: #6d4c12; }
+  .drop-ico :global(svg) { width: 20px; height: 20px; }
+  .drop-text { display: grid; gap: 0.15rem; font-size: 0.9rem; }
+  .drop-text span { color: var(--muted); font-size: 0.8rem; }
+  .drop-files { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+  .drop-files:empty { display: none; }
+  .rq-submit { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; padding-top: 8px; }
+  .rq-submit p { margin: 0; font-size: 0.82rem; color: var(--muted); max-width: 40ch; }
+  .rq-aside { position: sticky; top: 108px; display: grid; gap: 14px; }
+  .aside-card { padding: 26px; border-radius: var(--r-xl); background: var(--white); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft); display: grid; gap: 1.2rem; justify-items: start; }
+  .aside-card ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; counter-reset: a; }
+  .aside-card li { position: relative; display: grid; gap: 0.2rem; padding-left: 2.4rem; font-size: 0.86rem; color: var(--muted); counter-increment: a; }
+  .aside-card li::before { content: counter(a); position: absolute; left: 0; top: -2px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: var(--white); font-size: 0.74rem; font-weight: 600; }
+  .aside-card li strong { color: var(--ink); font-weight: 500; font-size: 0.95rem; }
+  .aside-contact { grid-template-columns: auto 1fr; align-items: center; background: var(--navy); color: var(--white); box-shadow: none; }
+  .aside-contact div:not(.ac-mono) { display: grid; }
+  .aside-contact strong { font-family: var(--f-display); font-size: 1.35rem; font-weight: 600; }
+  .aside-contact span { font-size: 0.82rem; color: rgba(255, 255, 255, 0.6); }
+  .aside-contact a { grid-column: 1 / -1; display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 0.9rem; border-radius: 12px; background: rgba(255, 255, 255, 0.06); font-size: 0.88rem; width: 100%; transition: background-color 0.4s var(--ease); }
+  .aside-contact a:hover { background: rgba(255, 255, 255, 0.12); }
+  .aside-contact :global(svg) { width: 16px; height: 16px; color: var(--sun-2); }
+  .ac-mono { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: var(--sun-2); font-family: var(--f-display); font-style: italic; font-size: 1.2rem; font-weight: 600; }
+  .rq-done-core { padding: clamp(32px, 6vw, 72px); display: grid; gap: 1.4rem; justify-items: start; }
+  .done-ico { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--sun); color: var(--ink); animation: pop 500ms var(--ease-out) 70ms both; }
+  .done-ico :global(svg) { width: 26px; height: 26px; }
+  @keyframes pop { from { transform: scale(0.6); opacity: 0; } }
+  .rq-done > .bezel { animation: rise 500ms var(--ease-out) both; }
+  .rq-done-core > :not(.done-ico) { animation: rise 500ms var(--ease-out) both; }
+  .rq-done-core > :nth-child(2) { animation-delay: 140ms; }
+  .rq-done-core > :nth-child(3) { animation-delay: 210ms; }
+  .rq-done-core > :nth-child(4) { animation-delay: 280ms; }
+  .done-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  @media (max-width: 1000px) {
+    .rq { grid-template-columns: 1fr; }
+    .rq-aside { position: static; }
+  }
+  @media (max-width: 600px) { .row-2 { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { readList, addItem, clearList, onListChange, renderItems, bindItemControls } from '../scripts/requestList';
+
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+  const listEl = document.querySelector<HTMLElement>('[data-rq-list]')!;
+  const emptyEl = document.querySelector<HTMLElement>('[data-rq-empty]')!;
+  const fileInput = document.querySelector<HTMLInputElement>('[data-file]')!;
+  const filesEl = document.querySelector<HTMLElement>('[data-files]')!;
+  const drop = document.querySelector<HTMLElement>('[data-drop]')!;
+  const done = document.querySelector<HTMLElement>('[data-done]')!;
+  const map = JSON.parse(document.getElementById('product-map')!.textContent || '{}');
+
+  // ?produkt=slug aus der Produktseite übernehmen
+  const slug = new URLSearchParams(location.search).get('produkt');
+  if (slug && map[slug] && !readList().some((i) => i.slug === slug)) addItem(map[slug]);
+  if (slug) history.replaceState(null, '', location.pathname);
+
+  const sync = () => {
+    const items = readList();
+    renderItems(listEl, items);
+    emptyEl.hidden = items.length > 0;
+  };
+  bindItemControls(listEl);
+  onListChange(sync);
+  sync();
+
+  const showFiles = () => {
+    filesEl.innerHTML = '';
+    [...(fileInput.files ?? [])].forEach((f) => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = `${f.name} · ${Math.max(1, Math.round(f.size / 1024))} KB`;
+      filesEl.appendChild(chip);
+    });
+  };
+  fileInput.addEventListener('change', showFiles);
+  ['dragenter', 'dragover'].forEach((t) => drop.addEventListener(t, () => drop.classList.add('is-over')));
+  ['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, () => drop.classList.remove('is-over')));
+
+  const validate = () => {
+    let firstBad: HTMLElement | null = null;
+    form.querySelectorAll<HTMLInputElement>('[required]').forEach((el) => {
+      const ok = el.type === 'checkbox' ? el.checked : el.type === 'email' ? /^\S+@\S+\.\S+$/.test(el.value) : el.value.trim().length > 0;
+      el.closest('.field')?.classList.toggle('has-error', !ok);
+      if (!ok && !firstBad) firstBad = el;
+    });
+    return firstBad as HTMLElement | null;
+  };
+  form.addEventListener('input', (e) => {
+    const field = (e.target as HTMLElement).closest('.field');
+    if (field?.classList.contains('has-error')) validate();
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const bad = validate();
+    if (bad) { bad.focus(); return; }
+    // DEMO: Hier wird später an das Backend bzw. CRM übergeben (z. B. Formular-Endpoint oder E-Mail-Versand).
+    const ref = `VZ-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    done.querySelector('[data-ref]')!.textContent = ref;
+    form.hidden = true;
+    done.hidden = false;
+    clearList();
+    window.scrollTo({ top: done.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' });
+    done.focus({ preventScroll: true });
+  });
+</script>

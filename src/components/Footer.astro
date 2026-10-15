@@ -1,0 +1,79 @@
+---
+import { u } from '../lib/url';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { company } from '../data/site';
+import { categories } from '../data/products';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr">
+  <div class="container">
+    <div class="ftr-top">
+      <div class="ftr-brand">
+        <Logo size="md" gmbh />
+        <p>PV-Großhandel für Stadtwerke, Energieversorger, Projektentwickler und das Fachhandwerk. Bundesweit, herstellerunabhängig, in Projektmengen.</p>
+        <a href={u("/anfrage")} class="btn btn--sm">Projekt anfragen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+      </div>
+
+      <div class="ftr-cols">
+        <div>
+          <h3>Sortiment</h3>
+          <ul>{categories.map((c) => <li><a href={u(`/produkte/${c.id}`)}>{c.name}</a></li>)}</ul>
+        </div>
+        <div>
+          <h3>Unternehmen</h3>
+          <ul>
+            <li><a href={u("/hersteller")}>Hersteller</a></li>
+            <li><a href={u("/loesungen")}>Für wen</a></li>
+            <li><a href={u("/ueber-uns")}>Über uns</a></li>
+            <li><a href={u("/shop")}>Online-Shop <span class="soon">Bald</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Kontakt</h3>
+          <ul class="ftr-contact">
+            <li><Icon name="pin" /><span>{company.street}<br />{company.city}</span></li>
+            <li><Icon name="phone" /><a href={`tel:${company.phoneHref}`}>{company.phone}</a></li>
+            <li><Icon name="mail" /><a href={`mailto:${company.email}`}>{company.email}</a></li>
+            <li><Icon name="linkedin" /><a href={company.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftr-bottom">
+      <span>© {year} {company.name} · Ausschließlich für gewerbliche Kunden (B2B)</span>
+      <nav aria-label="Rechtliches">
+        <a href={u("/impressum")}>Impressum</a>
+        <a href={u("/datenschutz")}>Datenschutz</a>
+        <a href={u("/agb")}>AGB</a>
+      </nav>
+    </div>
+    <p class="ftr-note">Herstellernamen und Logos sind Marken der jeweiligen Inhaber. Technische Daten ohne Gewähr, maßgeblich ist das jeweils aktuelle Datenblatt des Herstellers.</p>
+  </div>
+</footer>
+
+<style>
+  .ftr { position: relative; z-index: 2; margin-top: var(--section); background: var(--paper-2); color: var(--muted); padding: clamp(48px, 6vw, 72px) 0 28px; font-size: 0.8rem; }
+  .ftr > .container { max-width: 1100px; }
+  .ftr-top { display: grid; grid-template-columns: 1.1fr 1.6fr; gap: clamp(40px, 6vw, 88px); padding-bottom: 40px; border-bottom: 1px solid #d2d2d7; }
+  .ftr-brand { display: grid; gap: 1.2rem; align-content: start; justify-items: start; }
+  .ftr-brand p { margin: 0; max-width: 40ch; font-size: 0.85rem; line-height: 1.5; }
+  .ftr-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .ftr h3 { margin: 0 0 0.8rem; font-size: 0.8rem; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+  .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+  .ftr ul a { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ftr ul a:hover, .ftr-bottom a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .ftr-contact li { display: flex; gap: 0.6rem; align-items: flex-start; }
+  .ftr-contact :global(svg) { width: 14px; height: 14px; flex: none; margin-top: 2px; color: var(--ink); }
+  .soon { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.14rem 0.45rem; border-radius: 980px; background: var(--sun-3); color: #8a5f17; }
+  .ftr-bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 20px; }
+  .ftr-bottom nav { display: flex; gap: 1.2rem; }
+  .ftr-note { margin: 14px 0 0; font-size: 0.72rem; color: #86868b; max-width: 90ch; }
+  @media (max-width: 900px) { .ftr-top { grid-template-columns: 1fr; } }
+  @media (max-width: 600px) {
+    .ftr-cols { grid-template-columns: 1fr 1fr; }
+    .ftr-cols > div:last-child { grid-column: 1 / -1; }
+  }
+</style>

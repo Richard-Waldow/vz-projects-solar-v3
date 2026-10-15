@@ -1,0 +1,763 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ProductArt from '../components/ProductArt.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import GermanyMap from '../components/GermanyMap.astro';
+import { categories, products, productsByCategory } from '../data/products';
+import { brands } from '../data/brands';
+import { company, stats, showPlaceholderNote } from '../data/site';
+
+const heroWords = 'Ihr PV-Großhandel für Projekte.'.split(' ');
+const heroAccent = 'Schnell. Verlässlich. Transparent.'.split(' ');
+
+const challenges = [
+  { t: 'Zersplittert', d: 'Module hier, Wechselrichter dort, Unterkonstruktion woanders: Jede Komponente ist ein eigener Einkauf mit eigenem Ansprechpartner.' },
+  { t: 'Intransparent', d: 'Verfügbarkeiten, Datenblätter und Konditionen sind schwer vergleichbar. Wer was liefern kann, zeigt sich oft erst spät.' },
+  { t: 'Langsam', d: 'Angebote ziehen sich, Alternativen fehlen und Projekte warten auf Material, statt gebaut zu werden.' },
+];
+
+const manifesto = [
+  ['Wir', 'bauen', 'den', 'PV-Großhandel,', 'den', 'Projekte', 'brauchen:'],
+  ['*ein', '*Ansprechpartner', '*für', '*das', '*komplette', '*Material,'],
+  ['verbindliche', 'Projektangebote', 'und', '*Logistik', '*bis', '*zur', '*Baustelle.'],
+  ['Damit', 'Stadtwerke,', 'Projektierer', 'und', 'Solarteure', '*planen', '*können,'],
+  ['statt', 'Material', 'hinterherzutelefonieren.'],
+].flat();
+
+const solutions = [
+  { t: 'Projektkonditionen', d: 'Verbindliche Angebote für Container- und Projektmengen. Per Telefon, E-Mail, WhatsApp oder direkt aus Ihrer Stückliste.', img: '/img/utility.jpg' },
+  { t: 'Herstellerunabhängig', d: `${brands.length} Marken im Sortiment. Wir empfehlen, was zum Projekt passt, und bieten Alternativen, wenn ein Hersteller knapp wird.`, img: '/img/field.jpg' },
+  { t: 'Logistik bis zur Baustelle', d: 'Direkt ab Hersteller- und Partnerlager: palettiert, avisiert und auf Wunsch in Teilabrufen.', img: '/img/roof.jpg' },
+  { t: 'Technische Prüfung', d: 'Wir prüfen Stücklisten auf Kompatibilität, damit Modul, Wechselrichter, Speicher und Unterkonstruktion zusammenpassen.', img: '/img/installer.jpg' },
+];
+
+const brandGroups = categories.map((c) => ({
+  c,
+  brands: brands.filter((b) => products.some((p) => p.brand === b.id && p.category === c.id)),
+}));
+
+const steps = [
+  { k: 'anfrage', t: 'Anfrage', n: '01', h: 'Bedarf schildern', d: 'Mengen, Projekt und Zeitfenster per Telefon, E-Mail, WhatsApp, Stückliste oder über den Produktkatalog. Wir strukturieren die Anfrage und klären offene Punkte.' },
+  { k: 'angebot', t: 'Angebot', n: '02', h: 'Verbindliches Angebot erhalten', d: 'Positionen, Konditionen und geprüfte Kompatibilität in einem Angebot. Wo sinnvoll, mit gleichwertigen Alternativen anderer Hersteller.' },
+  { k: 'lieferung', t: 'Lieferung', n: '03', h: 'Liefern, abrufen, nachbestellen', d: 'Avisierte Lieferung auf die Baustelle, ins Lager oder in Teilabrufen. Jede Bestellung macht die nächste schneller, weil wir Ihre Standards kennen.' },
+];
+
+const segments = [
+  {
+    k: 'evu', t: 'Stadtwerke & EVU',
+    h: 'PV-Pakete für Ihr Endkundengeschäft',
+    d: 'Standardisierte Anlagenpakete, Rahmenverträge mit planbaren Konditionen und ein fester Ansprechpartner, damit Ihr PV-Angebot skaliert.',
+    points: ['Rahmenverträge & Abrufmengen', 'Paketierung nach Ihrem Portfolio', 'Herstellerunabhängige Beratung', 'Ein Ansprechpartner für alles'],
+    imgs: ['/img/commercial.jpg', '/img/aerial.jpg'],
+  },
+  {
+    k: 'epc', t: 'Projektentwickler & EPC',
+    h: 'Containerware für Freifläche und Gewerbedach',
+    d: 'Module, Wechselrichter, Unterkonstruktion und Kabel projektbezogen kalkuliert, inklusive Alternativen, wenn ein Hersteller knapp wird.',
+    points: ['Projektpreise ab Containermenge', 'Stücklistenprüfung & Kompatibilität', 'Abgestimmte Lieferabrufe', 'Dokumentation & Zertifikate'],
+    imgs: ['/img/utility.jpg', '/img/field.jpg'],
+  },
+  {
+    k: 'handwerk', t: 'Solarteure & Handwerk',
+    h: 'Alles fürs Dach, aus einer Hand',
+    d: 'Vom Modul bis zum MC4-Stecker: abgestimmte Komponenten für Wohn- und Gewerbeanlagen, inklusive Speicher, Wallbox und Wärmepumpe.',
+    points: ['Komplettpakete fürs Einfamilienhaus', 'Speicher-, Wallbox- & WP-Kombis', 'Lieferung direkt zur Baustelle', 'Bald: Online-Shop'],
+    imgs: ['/img/installer.jpg', '/img/roof.jpg'],
+  },
+];
+
+const quality = [
+  { k: 'Herkunft', t: 'Original-Herstellerware', d: 'Bezug direkt bei Herstellern und autorisierten Distributionspartnern, mit voller Herstellergarantie.' },
+  { k: 'Normen', t: 'IEC 61215 · IEC 61730 · VDE-AR-N 4105 / 4110', d: 'Zertifizierte Komponenten für Netzanschluss und Förderfähigkeit in Deutschland.' },
+  { k: 'Dokumente', t: 'Datenblätter & Zertifikate', d: 'Konformitätserklärungen, Garantieunterlagen und Datenblätter zu jeder Lieferung.' },
+];
+
+const regions = [
+  { r: 'Nord', c: ['Hamburg', 'Bremen', 'Kiel', 'Rostock'] },
+  { r: 'Ost', c: ['Berlin', 'Leipzig', 'Dresden', 'Magdeburg'] },
+  { r: 'West', c: ['Köln', 'Dortmund', 'Hannover', 'Frankfurt'] },
+  { r: 'Süd', c: ['München', 'Stuttgart', 'Nürnberg', 'Freiburg'] },
+];
+---
+
+<Base title="Start">
+  <!-- HERO: Headline zentriert, darunter das Video als Kachel, die sich beim Scrollen aufzieht -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow hero-eyebrow">PV-Großhandel für Projekte</span>
+      <h1 class="display hero-title" aria-label="Ihr PV-Großhandel für Projekte. Schnell, verlässlich, transparent.">
+        <span class="hero-line">{heroWords.map((w, i) => <span class="w" aria-hidden="true"><span style={`--i:${i}`}>{w}</span></span>)}</span>
+        <span class="hero-line">{heroAccent.map((w, i) => <span class="w" aria-hidden="true"><span style={`--i:${heroWords.length + i}`}><em>{w}</em></span></span>)}</span>
+      </h1>
+      <p class="hero-lead">Module, Wechselrichter, Speicher und alles, was dazugehört. Verbindliche Projektangebote, herstellerunabhängige Beratung und Lieferung bis auf die Baustelle.</p>
+      <div class="hero-ctas">
+        <a href={u('/anfrage')} class="btn">Angebot anfragen</a>
+        <a href={u('/produkte')} class="link-arrow">Sortiment ansehen <Icon name="arrow-right" /></a>
+      </div>
+    </div>
+
+    <div class="hero-stage" data-stage>
+      <div class="hero-media">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster={u('/video/hero-poster.jpg')} aria-hidden="true">
+          <source src={u('/video/hero.mp4')} type="video/mp4" />
+        </video>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <dl class="hero-stats">
+          {stats.map((s) => (
+            <div>
+              <dd><span class="countup"><span aria-hidden="true">{s.value}</span><span data-countup>{s.value}</span></span><span class="unit">{s.unit}</span></dd>
+              <dt>{s.label}</dt>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  </section>
+  {showPlaceholderNote && <p class="placeholder-note hero-note">Kennzahlen sind Beispielwerte für die Präsentation.</p>}
+
+  <!-- HERAUSFORDERUNG -->
+  <div class="gridband"></div>
+  <section class="challenge">
+    <h2 class="h2 reveal">Die Herausforderung heute</h2>
+    <div class="ch-grid">
+      {challenges.map((c, i) => (
+        <article class="ch reveal" style={`--d:${i * 90}ms`}>
+          <div class:list={['vig', `vig-${i}`]} aria-hidden="true">
+            {i === 0 && (
+              <div class="vig-card">
+                <span class="vig-title">Herstellermarkt</span>
+                <span class="vig-sub"><span class="spin"></span>Verbinde Lieferanten …</span>
+                <span class="vig-rot"><span>Modul · Distributor A</span><span>Wechselrichter · Händler B</span><span>Speicher · Importeur C</span></span>
+              </div>
+            )}
+            {i === 1 && (
+              <div class="vig-card">
+                <span class="vig-title">Produkt</span>
+                <span class="vig-sub"><span class="spin"></span>Suche Datenblatt …</span>
+                <span class="vig-skel"><i></i><i></i><i></i></span>
+              </div>
+            )}
+            {i === 2 && (
+              <div class="vig-chips">
+                <span><span class="spin"></span>Preis</span>
+                <span><span class="spin"></span>Verfügbarkeit</span>
+              </div>
+            )}
+          </div>
+          <h3 class="h3">{c.t}</h3>
+          <p>{c.d}</p>
+        </article>
+      ))}
+    </div>
+    <svg class="ch-lines" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M200 0V60H1000V0M600 60V120" class="ch-path" />
+      <path d="M200 0V60H1000V0M600 60V120" class="ch-flow" />
+    </svg>
+    <div class="ch-nodes" aria-hidden="true"><span class="node" style="left:16.66%"></span><span class="node" style="left:50%"></span><span class="node" style="left:83.33%"></span></div>
+  </section>
+
+  <!-- MANIFEST: Wörter leuchten beim Scrollen auf -->
+  <section class="manifest" data-scrub>
+    <div class="mf-mark" aria-hidden="true"><span>v<span>Z</span></span></div>
+    <p class="mf-text">
+      {manifesto.map((w) => w.startsWith('*') ? <span class="mw hl">{w.slice(1)} </span> : <span class="mw">{w} </span>)}
+    </p>
+  </section>
+  <div class="gridband"></div>
+
+  <!-- LÖSUNG -->
+  <section class="solution">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Lösung</span>
+      <h2 class="h2">Ein Großhändler für<br />das ganze Projekt</h2>
+    </div>
+    <div class="sol-grid">
+      {solutions.map((s, i) => (
+        <article class="sol reveal" style={`--d:${i * 80}ms`}>
+          <div class="sol-img"><img src={u(s.img)} alt="" loading="lazy" /></div>
+          <div class="sol-body">
+            <h3 class="h3">{s.t}</h3>
+            <p>{s.d}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ÖKOSYSTEM: Hersteller je Kategorie -->
+  <section class="eco">
+    <div class="sec-head reveal">
+      <h2 class="h2">Unser Herstellernetzwerk</h2>
+      <p class="lead">Tier-1-Module, Wechselrichter, Speicher und Systemtechnik. Bezogen direkt bei Herstellern und autorisierten Distributionspartnern.</p>
+    </div>
+    <div class="eco-grid">
+      {brandGroups.map((g) => (
+        <a href={u(`/produkte/${g.c.id}`)} class="eco-cell reveal">
+          <span class="mono eco-label">{g.c.name}</span>
+          <span class="eco-logos">{g.brands.map((b) => <span class="eco-logo"><BrandLogo id={b.id} mono /></span>)}</span>
+        </a>
+      ))}
+      <a href={u('/hersteller')} class="eco-cell eco-all reveal">
+        <span class="mono eco-label">{brands.length} Hersteller</span>
+        <span class="eco-cta">Alle Hersteller ansehen <Icon name="arrow-right" /></span>
+      </a>
+    </div>
+  </section>
+  <div class="gridband"></div>
+
+  <!-- SO FUNKTIONIERT'S: Tabs mit Fortschrittsbalken -->
+  <section class="how" data-tabs="how">
+    <div class="how-head">
+      <div class="reveal">
+        <span class="eyebrow">So funktioniert's</span>
+        <h2 class="h2">Ein Ablauf von der<br />Anfrage bis zur Baustelle</h2>
+      </div>
+      <div class="how-side reveal" style="--d:100ms">
+        <p class="lead">VZ Projects begleitet jede Bestellung von der ersten Anfrage bis zur Lieferung. Sie haben einen Ansprechpartner, wir koordinieren Hersteller, Logistik und Dokumentation.</p>
+        <a href={u('/anfrage')} class="btn">Jetzt anfragen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Ablauf">
+      {steps.map((s, i) => (
+        <button type="button" role="tab" class="tab" id={`how-tab-${s.k}`} aria-controls={`how-panel-${s.k}`} aria-selected={i === 0 ? 'true' : 'false'} data-tab={i}>
+          <span>{s.t}</span><span class="mono">{s.n}</span>
+          <span class="tab-bar" aria-hidden="true"><i></i></span>
+        </button>
+      ))}
+    </div>
+
+    <div class="how-body">
+      {steps.map((s, i) => (
+        <div class="how-panel" role="tabpanel" id={`how-panel-${s.k}`} aria-labelledby={`how-tab-${s.k}`} hidden={i !== 0} data-panel={i}>
+          <div class="how-text">
+            <span class="mono how-n">{s.n} / 03</span>
+            <h3 class="h3">{s.h}</h3>
+            <p>{s.d}</p>
+          </div>
+          <div class="how-visual">
+            <img src={u(i === 0 ? '/img/installer.jpg' : i === 1 ? '/img/commercial.jpg' : '/img/utility.jpg')} alt="" loading="lazy" />
+            {i === 0 && (
+              <div class="chat" aria-hidden="true">
+                <p class="msg msg--in" style="--k:0">Hallo, habt ihr Module und Wechselrichter für 1,2 MWp Freifläche in Brandenburg?</p>
+                <p class="msg msg--out" style="--k:1"><span class="msg-from">VZ Projects</span>Ja. Zwei Varianten: Trina Vertex N bifazial oder JA DeepBlue 4.0, jeweils mit Sungrow SG110CX. Schicken Sie uns gern die Stückliste.</p>
+                <p class="msg msg--in" style="--k:2">Stückliste kommt per Mail. Unterkonstruktion bitte mit anbieten.</p>
+                <p class="msg msg--out" style="--k:3"><span class="msg-from">VZ Projects</span>Gern, K2 oder Schletter. Wir prüfen die Kompatibilität und melden uns mit dem Angebot.</p>
+              </div>
+            )}
+            {i === 1 && (
+              <div class="quote" aria-hidden="true">
+                <div class="q-head"><span class="mono">Angebot VZ-2026-0412</span><span class="q-badge"><Icon name="check" /> Verbindlich</span></div>
+                <ul>
+                  <li style="--k:0"><span>2.016 ×</span>Trina Vertex N 620 Wp, bifazial</li>
+                  <li style="--k:1"><span>10 ×</span>Sungrow SG110CX</li>
+                  <li style="--k:2"><span>1 ×</span>K2 TerraGround, Freifläche</li>
+                  <li style="--k:3"><span>1 ×</span>Kabel & MC4-Stecker lt. Stückliste</li>
+                </ul>
+                <div class="q-foot"><span class="mono">Kompatibilität geprüft</span><Icon name="check" /></div>
+              </div>
+            )}
+            {i === 2 && (
+              <div class="track" aria-hidden="true">
+                <div class="q-head"><span class="mono">Lieferung · Projekt Brandenburg</span></div>
+                <ol>
+                  <li class="done" style="--k:0"><i></i>Auftrag bestätigt</li>
+                  <li class="done" style="--k:1"><i></i>Ware beim Hersteller kommissioniert</li>
+                  <li class="now" style="--k:2"><i></i>Unterwegs · Lkw 3 von 6</li>
+                  <li style="--k:3"><i></i>Anlieferung Baustelle, avisiert</li>
+                </ol>
+                <div class="track-bar"><i></i></div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- FÜR WEN -->
+  <div class="gridband"></div>
+  <section class="who" data-tabs="who">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Für Energieversorger, Projektierer & Handwerk</span>
+      <h2 class="h2">Ein Lieferant, der Ihr<br />Wachstum mitträgt</h2>
+      <p class="lead">Verfügbarkeit, Planbarkeit und ein Ansprechpartner, der Ihr Geschäft versteht.</p>
+    </div>
+    <div class="seg-tabs" role="tablist" aria-label="Kundengruppen">
+      {segments.map((s, i) => (
+        <button type="button" role="tab" class="seg-tab" id={`who-tab-${s.k}`} aria-controls={`who-panel-${s.k}`} aria-selected={i === 0 ? 'true' : 'false'} data-tab={i}>{s.t}</button>
+      ))}
+    </div>
+    {segments.map((s, i) => (
+      <div class="seg" role="tabpanel" id={`who-panel-${s.k}`} aria-labelledby={`who-tab-${s.k}`} hidden={i !== 0} data-panel={i}>
+        <div class="seg-imgs">{s.imgs.map((src) => <div><img src={u(src)} alt="" loading="lazy" /></div>)}</div>
+        <div class="seg-body">
+          <div class="seg-copy">
+            <h3 class="h3">{s.h}</h3>
+            <p>{s.d}</p>
+          </div>
+          <ul class="seg-points">{s.points.map((p) => <li><Icon name="check" />{p}</li>)}</ul>
+        </div>
+      </div>
+    ))}
+    <div class="who-cta"><a href={u('/loesungen')} class="btn btn--ghost">Lösungen im Detail <span class="btn-icon"><Icon name="arrow-right" /></span></a></div>
+  </section>
+
+  <!-- SORTIMENT -->
+  <div class="gridband"></div>
+  <section class="range">
+    <div class="range-head">
+      <div class="reveal">
+        <span class="eyebrow">Sortiment</span>
+        <h2 class="h2">{products.length} Produktlinien in<br />7 Kategorien</h2>
+      </div>
+      <a href={u('/produkte')} class="btn btn--ghost reveal">Zum Produktkatalog <span class="btn-icon"><Icon name="arrow-right" /></span></a>
+    </div>
+    <div class="range-grid">
+      {categories.map((c, i) => {
+        const list = productsByCategory(c.id);
+        const bs = [...new Set(list.map((p) => p.brand))].length;
+        return (
+          <a href={u(`/produkte/${c.id}`)} class="rc reveal" style={`--d:${(i % 4) * 70}ms`}>
+            <div class="rc-art"><ProductArt category={c.id} seed={i} cover /></div>
+            <div class="rc-body">
+              <span class="mono rc-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{c.name}</h3>
+              <span class="mono rc-meta">{list.length} Produktlinien · {bs} Hersteller</span>
+            </div>
+            <span class="rc-go"><Icon name="arrow-up-right" /></span>
+          </a>
+        );
+      })}
+      <a href={u('/anfrage')} class="rc rc-cta reveal" style="--d:210ms">
+        <span class="mono">Nicht dabei?</span>
+        <h3>Wir beschaffen auch außerhalb des Katalogs.</h3>
+        <span class="link-arrow">Individuell anfragen <Icon name="arrow-right" /></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- QUALITÄT -->
+  <div class="gridband"></div>
+  <section class="quality">
+    <div class="q-copy reveal">
+      <span class="eyebrow">Qualität & Compliance</span>
+      <h2 class="h2">Zertifizierte Ware,<br />saubere Unterlagen</h2>
+      <p class="lead">Wir prüfen Zertifikate, Normen und Garantiebedingungen, bevor Ware auf Ihre Baustelle geht. Damit Netzanschluss, Abnahme und Förderung ohne Rückfragen laufen.</p>
+    </div>
+    <ul class="q-cells">
+      {quality.map((q, i) => (
+        <li class="reveal" style={`--d:${i * 80}ms`}>
+          <span class="mono">{q.k}</span>
+          <strong>{q.t}</strong>
+          <span>{q.d}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- KARTE -->
+  <div class="gridband"></div>
+  <section class="reach">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Lieferung</span>
+      <h2 class="h2">Bundesweit liefern,<br />regional denken</h2>
+      <p class="lead">Direkt ab Hersteller- und Partnerlagern auf Ihre Baustelle, in alle 16 Bundesländer.</p>
+    </div>
+    <div class="reach-grid">
+      <div class="reach-map reveal"><GermanyMap /></div>
+      <div class="reach-list">
+        {regions.map((r, i) => (
+          <div class="reveal" style={`--d:${i * 70}ms`}>
+            <span class="mono">{r.r}</span>
+            <ul>{r.c.map((c) => <li>{c}</li>)}</ul>
+          </div>
+        ))}
+        <p class="placeholder-note">Beispielhafte Lieferregionen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP-HINWEIS -->
+  <div class="gridband"></div>
+  <section class="shopline">
+    <div class="reveal">
+      <span class="eyebrow">Online-Shop · Bald</span>
+      <h2 class="h3">Für Solarteure: bestellen mit Projektkonditionen, rund um die Uhr.</h2>
+    </div>
+    <a href={u('/shop')} class="btn btn--ghost reveal">Benachrichtigen lassen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+  </section>
+
+  <!-- ABSCHLUSS-CTA mit Lichtkegel -->
+  <section class="final on-dark">
+    <video class="final-video" autoplay muted loop playsinline preload="none" poster={u('/video/topdown-poster.jpg')} aria-hidden="true">
+      <source src={u('/video/topdown.mp4')} type="video/mp4" />
+    </video>
+    <div class="final-glow" aria-hidden="true"></div>
+    <div class="final-inner reveal">
+      <svg class="final-sun" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="7.2" fill="none" stroke="currentColor" stroke-width="2.4"></circle>
+        <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="20" y1="2.5" x2="20" y2="8"></line><line x1="20" y1="32" x2="20" y2="37.5"></line>
+          <line x1="2.5" y1="20" x2="8" y2="20"></line><line x1="32" y1="20" x2="37.5" y2="20"></line>
+          <line x1="7.6" y1="7.6" x2="11.5" y2="11.5"></line><line x1="28.5" y1="28.5" x2="32.4" y2="32.4"></line>
+          <line x1="7.6" y1="32.4" x2="11.5" y2="28.5"></line><line x1="28.5" y1="11.5" x2="32.4" y2="7.6"></line>
+        </g>
+      </svg>
+      <h2 class="h2">Ihr nächstes Projekt.<br />Ein Ansprechpartner.</h2>
+      <p class="lead">Schicken Sie uns Ihre Stückliste oder rufen Sie an. {company.ceo} und das Team melden sich mit einem verbindlichen Angebot.</p>
+      <div class="hero-ctas">
+        <a href={u('/anfrage')} class="btn">Angebot anfragen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+        <a href={company.linkedin} target="_blank" rel="noopener" class="btn btn--ghost">{company.ceo} auf LinkedIn <span class="btn-icon"><Icon name="linkedin" /></span></a>
+      </div>
+    </div>
+  </section>
+  <div class="contact-strip">
+    <div><span class="mono">Telefon</span><a href={`tel:${company.phoneHref}`}>{company.phone}</a></div>
+    <div><span class="mono">E-Mail</span><a href={`mailto:${company.email}`}>{company.email}</a></div>
+    <div><span class="mono">Geschäftszeiten</span><span>Mo–Fr 8:00–18:00 Uhr</span></div>
+    <div><span class="mono">Standort</span><span>{company.city}</span></div>
+  </div>
+</Base>
+
+<style>
+  /* Layout-Breite wie apple.com */
+  .hero, .challenge, .manifest, .solution, .eco, .how, .who, .range, .quality, .reach, .shopline, .final, .contact-strip { max-width: 1100px; margin-left: auto; margin-right: auto; }
+  section { padding-left: var(--gutter); padding-right: var(--gutter); }
+
+  /* HERO */
+  .hero { padding-top: clamp(112px, 14vw, 168px); }
+  .hero-inner { display: grid; justify-items: center; gap: 1.1rem; text-align: center; }
+  .hero-title { font-size: clamp(2.7rem, 7.4vw, 6rem); }
+  .hero-line { display: block; }
+  .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin: 0 0.12em; }
+  .w > span { display: inline-block; animation: word 1000ms var(--ease-out) both; animation-delay: calc(150ms + var(--i) * 55ms); }
+  @keyframes word { from { transform: translateY(105%); } }
+  .hero-lead { margin: 0.4rem 0 0; max-width: 40ch; font-size: clamp(1.1rem, 1.5vw, 1.35rem); line-height: 1.45; color: var(--muted); animation: fade 900ms var(--ease-out) 650ms both; }
+  .hero-ctas { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.6rem; margin-top: 0.8rem; animation: fade 900ms var(--ease-out) 800ms both; }
+  .link-arrow :global(svg) { width: 14px; height: 14px; }
+  .hero-stage { margin-top: clamp(48px, 6vw, 80px); }
+  .hero-media { position: relative; aspect-ratio: 16 / 9; border-radius: var(--r-xl); overflow: hidden; background: #000; transform: scale(var(--s, 0.92)); transform-origin: 50% 0; will-change: transform; animation: stage-in 1200ms var(--ease-out) 300ms both; }
+  @keyframes stage-in { from { opacity: 0; translate: 0 40px; } }
+  .hero-video { width: 100%; height: 100%; object-fit: cover; }
+  .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.65)); }
+  .hero-stats { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 0 clamp(16px, 3vw, 36px) clamp(18px, 2.6vw, 30px); color: #fff; }
+  .hero-stats div { display: grid; gap: 0.2rem; }
+  .hero-stats dt { font-size: 0.78rem; color: rgba(255, 255, 255, 0.72); letter-spacing: -0.005em; }
+  .hero-stats dd { margin: 0; font-size: clamp(1.5rem, 3vw, 2.6rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; }
+  .hero-stats .unit { margin-left: 0.12em; font-size: 0.5em; color: var(--sun-2); letter-spacing: 0; }
+  .hero-note { max-width: 1100px; margin: 12px auto 0; padding: 0 var(--gutter); text-align: center; }
+
+  /* HERAUSFORDERUNG */
+  .challenge { position: relative; padding-top: var(--section); text-align: center; }
+  .challenge > .h2 { margin-bottom: clamp(40px, 5vw, 64px); }
+  .ch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .ch { display: grid; justify-items: center; align-content: start; gap: 0.7rem; padding: 32px 24px 36px; border-radius: var(--r-xl); background: var(--tile); }
+  .ch p { margin: 0; max-width: 32ch; font-size: 0.95rem; line-height: 1.5; color: var(--muted); }
+  .vig { display: grid; place-items: center; width: 100%; height: 132px; margin-bottom: 0.4rem; }
+  .vig-card { position: relative; display: grid; gap: 0.35rem; width: min(250px, 100%); padding: 14px 16px; text-align: left; border-radius: 14px; background: #fff; box-shadow: var(--shadow-soft); overflow: hidden; }
+  .vig-title { font-size: 0.88rem; font-weight: 600; }
+  .vig-sub { display: flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; color: var(--muted); }
+  .spin { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid rgba(0, 0, 0, 0.12); border-top-color: var(--sun); animation: spin 0.9s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .vig-rot { position: relative; height: 1.5em; margin-top: 0.35rem; overflow: hidden; font-size: 0.74rem; font-weight: 500; color: #b8822a; }
+  .vig-rot span { position: absolute; inset: 0; opacity: 0; animation: rot 7.5s var(--ease) infinite; }
+  .vig-rot span:nth-child(2) { animation-delay: 2.5s; }
+  .vig-rot span:nth-child(3) { animation-delay: 5s; }
+  @keyframes rot { 0% { opacity: 0; transform: translateY(100%); } 6%, 30% { opacity: 1; transform: none; } 36%, 100% { opacity: 0; transform: translateY(-100%); } }
+  .vig-skel { display: grid; gap: 6px; margin-top: 0.4rem; }
+  .vig-skel i { height: 7px; border-radius: 4px; background: linear-gradient(90deg, #ececf0, #dcdce2, #ececf0); background-size: 200% 100%; animation: shimmer 1.8s linear infinite; }
+  .vig-skel i:nth-child(2) { width: 80%; }
+  .vig-skel i:nth-child(3) { width: 55%; }
+  @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+  .vig-chips { display: flex; gap: 8px; }
+  .vig-chips > span { display: flex; align-items: center; gap: 0.45rem; padding: 10px 16px; border-radius: 980px; background: #fff; box-shadow: var(--shadow-soft); font-size: 0.84rem; font-weight: 500; }
+  .vig-chips > span:last-child .spin { animation-duration: 1.4s; }
+  .ch-lines { display: block; width: 100%; height: 100px; margin-top: 8px; overflow: visible; }
+  .ch-path { fill: none; stroke: #d2d2d7; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .ch-flow { fill: none; stroke: var(--sun); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; stroke-dasharray: 60 1400; animation: flow 4s linear infinite; }
+  @keyframes flow { from { stroke-dashoffset: 1460; } to { stroke-dashoffset: 0; } }
+  .ch-nodes { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 100px; height: 0; }
+  .ch-nodes .node { top: 0; }
+
+  /* MANIFEST */
+  .manifest { padding-top: clamp(64px, 8vw, 104px); padding-bottom: var(--section); display: grid; justify-items: center; gap: 2rem; text-align: center; }
+  .mf-mark { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: var(--ink); color: #fff; font-family: var(--f-script); font-style: italic; font-weight: 600; font-size: 2rem; letter-spacing: -0.04em; line-height: 1; }
+  .mf-mark > span > span { font-size: 1.12em; color: var(--sun-2); }
+  .mf-text { margin: 0; max-width: 24ch; font-size: clamp(1.9rem, 4.2vw, 3.5rem); font-weight: 600; line-height: 1.12; letter-spacing: -0.04em; }
+  .mw { color: #d2d2d7; transition: color 0.35s var(--ease); }
+  .mw.on { color: var(--ink); }
+  .mw.hl.on { color: #b8822a; }
+
+  /* gemeinsame Abschnittsabstände */
+  .solution, .eco, .who, .range, .quality, .reach { padding-top: var(--section); }
+  .sec-head { margin-bottom: clamp(40px, 5vw, 64px); }
+
+  /* LÖSUNG */
+  .sol-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .sol { display: grid; grid-template-rows: auto 1fr; border-radius: var(--r-xl); background: var(--tile); overflow: hidden; transition: transform 0.5s var(--ease); }
+  .sol-img { aspect-ratio: 4 / 5; overflow: hidden; }
+  .sol-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+  .sol-body { display: grid; gap: 0.5rem; align-content: start; padding: 22px 22px 28px; }
+  .sol-body .h3 { font-size: 1.2rem; }
+  .sol-body p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--muted); }
+  @media (hover: hover) and (pointer: fine) {
+    .sol:hover { transform: scale(1.015); }
+    .sol:hover .sol-img img { transform: scale(1.05); }
+  }
+
+  /* ÖKOSYSTEM */
+  .eco-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .eco-cell { display: grid; align-content: start; gap: 18px; min-height: 196px; padding: 24px; border-radius: var(--r-xl); background: var(--tile); transition: transform 0.5s var(--ease); }
+  .eco-label { font-family: var(--f-ui); font-size: 0.82rem; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .eco-logos { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; }
+  .eco-logo { display: flex; align-items: center; height: 24px; }
+  .eco-logo :global(img.blogo) { height: 20px; width: auto; max-width: 92px; }
+  .eco-logo :global(.blogo-text) { font-size: 0.9rem; }
+  .eco-cell:hover :global(.blogo--mono) { opacity: 1; filter: none; }
+  .eco-all { align-content: space-between; background: var(--ink); color: #fff; }
+  .eco-all .eco-label { color: rgba(255, 255, 255, 0.6); }
+  .eco-cta { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
+  .eco-cta :global(svg) { width: 16px; height: 16px; }
+  @media (hover: hover) and (pointer: fine) { .eco-cell:hover { transform: scale(1.015); } }
+
+  /* SO FUNKTIONIERT'S */
+  .how { padding-top: var(--section); }
+  .how-head { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: end; margin-bottom: clamp(32px, 4vw, 48px); }
+  .how-side { display: grid; gap: 1.2rem; justify-items: start; }
+  .how-side .lead { font-size: 1.05rem; }
+  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px; border-radius: 980px; background: var(--tile); margin-bottom: 16px; }
+  .tab { position: relative; display: flex; justify-content: center; gap: 0.6rem; align-items: center; padding: 12px 16px; border: 0; border-radius: 980px; background: none; color: var(--muted); font-size: 0.95rem; font-weight: 500; overflow: hidden; transition: color 0.3s var(--ease), background-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+  .tab[aria-selected='true'] { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+  .tab .mono { font-size: 0.7rem; opacity: 0.5; }
+  .tab-bar { position: absolute; left: 18%; right: 18%; bottom: 5px; height: 2px; border-radius: 2px; overflow: hidden; }
+  .tab-bar i { position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: left; }
+  .tab[aria-selected='true'] .tab-bar i { animation: progress var(--dur, 7s) linear both; }
+  .how.is-paused .tab-bar i { animation-play-state: paused; }
+  @keyframes progress { to { transform: scaleX(1); } }
+  .how-panel { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; }
+  .how-text { display: grid; align-content: end; gap: 0.7rem; padding: 36px; border-radius: var(--r-xl); background: var(--tile); animation: rise 600ms var(--ease-out) both; }
+  .how-text p { margin: 0; max-width: 44ch; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+  .how-n { font-family: var(--f-ui); font-weight: 600; color: #b8822a; font-size: 0.9rem; }
+  .how-visual { position: relative; min-height: 500px; border-radius: var(--r-xl); overflow: hidden; }
+  .how-visual > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.82); animation: zoomout 1.6s var(--ease-out) both; }
+  @keyframes zoomout { from { transform: scale(1.08); } }
+  .chat, .quote, .track { position: absolute; z-index: 1; }
+  .chat { left: 7%; right: 7%; bottom: 26px; display: grid; gap: 8px; }
+  .msg { max-width: 80%; margin: 0; padding: 10px 14px; border-radius: 18px; font-size: 0.82rem; line-height: 1.4; animation: rise 500ms var(--ease-out) both; animation-delay: calc(250ms + var(--k) * 650ms); }
+  .msg--in { justify-self: start; background: rgba(255, 255, 255, 0.86); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); color: var(--ink); border-bottom-left-radius: 6px; }
+  .msg--out { justify-self: end; background: var(--ink); color: #fff; border-bottom-right-radius: 6px; }
+  .msg-from { display: block; margin-bottom: 2px; font-size: 0.66rem; font-weight: 600; color: var(--sun-2); }
+  .quote, .track { left: 50%; top: 50%; width: min(400px, 84%); transform: translate(-50%, -50%); padding: 20px; border-radius: 20px; background: rgba(255, 255, 255, 0.86); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.4); }
+  .q-head { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--line); font-size: 0.76rem; color: var(--muted); }
+  .q-head .mono { font-family: var(--f-ui); font-weight: 600; color: var(--ink); }
+  .q-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 4px 10px; border-radius: 980px; background: var(--sun-3); color: #8a5f17; font-size: 0.72rem; font-weight: 600; }
+  .q-badge :global(svg) { width: 11px; height: 11px; }
+  .quote ul, .track ol { list-style: none; margin: 0; padding: 0; display: grid; }
+  .quote li { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 0.84rem; animation: rise 450ms var(--ease-out) both; animation-delay: calc(300ms + var(--k) * 220ms); }
+  .quote li span { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .q-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; color: #1f8a4c; font-weight: 500; font-size: 0.8rem; animation: fade 400ms var(--ease-out) 1.3s both; }
+  .q-foot .mono { font-family: var(--f-ui); }
+  .q-foot :global(svg) { width: 16px; height: 16px; }
+  .track ol { gap: 12px; padding: 10px 0 16px; }
+  .track li { display: flex; align-items: center; gap: 12px; font-size: 0.86rem; color: var(--muted); animation: rise 450ms var(--ease-out) both; animation-delay: calc(300ms + var(--k) * 260ms); }
+  .track li i { width: 12px; height: 12px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 1.5px #d2d2d7; }
+  .track li.done, .track li.now { color: var(--ink); }
+  .track li.done i { background: var(--ink); box-shadow: none; }
+  .track li.now i { background: var(--sun); box-shadow: 0 0 0 4px rgba(200, 149, 58, 0.25); animation: blink 1.4s var(--ease) infinite; }
+  @keyframes blink { 50% { box-shadow: 0 0 0 8px rgba(200, 149, 58, 0); } }
+  .track-bar { height: 4px; border-radius: 4px; background: #e8e8ed; overflow: hidden; }
+  .track-bar i { display: block; height: 100%; width: 100%; border-radius: 4px; background: var(--grad); transform-origin: left; animation: track 2.2s var(--ease-out) 600ms both; }
+  @keyframes track { from { transform: scaleX(0); } to { transform: scaleX(0.62); } }
+
+  /* FÜR WEN */
+  .seg-tabs { display: flex; width: max-content; max-width: 100%; margin: 0 auto 24px; padding: 4px; border-radius: 980px; background: var(--tile); overflow-x: auto; }
+  .seg-tab { flex: none; padding: 9px 18px; border: 0; border-radius: 980px; background: none; color: var(--muted); font-size: 0.9rem; font-weight: 500; transition: color 0.3s var(--ease), background-color 0.3s var(--ease), box-shadow 0.3s var(--ease); }
+  .seg-tab[aria-selected='true'] { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+  .seg { display: grid; gap: 16px; }
+  .seg-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .seg-imgs div { aspect-ratio: 16 / 10; border-radius: var(--r-xl); overflow: hidden; }
+  .seg-imgs img { width: 100%; height: 100%; object-fit: cover; animation: zoomout 1.4s var(--ease-out) both; }
+  .seg-body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .seg-copy { display: grid; gap: 0.6rem; align-content: start; padding: 32px; border-radius: var(--r-xl); background: var(--tile); animation: rise 500ms var(--ease-out) both; }
+  .seg-copy p { margin: 0; color: var(--muted); font-size: 0.98rem; line-height: 1.5; }
+  .seg-points { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .seg-points li { display: flex; gap: 0.6rem; align-items: flex-start; padding: 22px; border-radius: 20px; background: var(--tile); font-size: 0.92rem; font-weight: 500; animation: rise 500ms var(--ease-out) both; }
+  .seg-points li:nth-child(2) { animation-delay: 60ms; }
+  .seg-points li:nth-child(3) { animation-delay: 120ms; }
+  .seg-points li:nth-child(4) { animation-delay: 180ms; }
+  .seg-points :global(svg) { width: 16px; height: 16px; color: #b8822a; flex: none; margin-top: 2px; }
+  .who-cta { display: flex; justify-content: center; padding-top: 32px; }
+
+  /* SORTIMENT */
+  .range-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 4vw, 40px); }
+  .range-head > div { display: grid; gap: 0.6rem; }
+  .range-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .rc { position: relative; display: grid; grid-template-rows: auto 1fr; border-radius: var(--r-xl); background: var(--tile); overflow: hidden; transition: transform 0.5s var(--ease); }
+  .rc-art { aspect-ratio: 1 / 1; overflow: hidden; }
+  .rc-art :global(.art) { width: 100%; height: 100%; transition: transform 1.2s var(--ease); }
+  .rc-body { display: grid; gap: 0.25rem; align-content: start; padding: 4px 22px 24px; }
+  .rc-body h3 { margin: 0; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; }
+  .rc-n { display: none; }
+  .rc-meta { color: var(--muted); font-size: 0.8rem; font-family: var(--f-ui); }
+  .rc-go { position: absolute; top: 16px; right: 16px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #fff; color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); transition: background-color 0.3s var(--ease), color 0.3s var(--ease); }
+  .rc-go :global(svg) { width: 14px; height: 14px; }
+  .rc-cta { grid-template-rows: none; align-content: space-between; gap: 1rem; padding: 26px; background: var(--ink); color: #fff; }
+  .rc-cta .mono { font-family: var(--f-ui); color: var(--sun-2); font-size: 0.85rem; font-weight: 600; }
+  .rc-cta h3 { margin: 0; font-size: 1.5rem; font-weight: 600; line-height: 1.15; letter-spacing: -0.03em; }
+  .rc-cta .link-arrow { color: #fff; }
+  @media (hover: hover) and (pointer: fine) {
+    .rc:hover { transform: scale(1.015); }
+    .rc:hover .rc-art :global(.art) { transform: scale(1.05); }
+    .rc:hover .rc-go { background: var(--ink); color: #fff; }
+  }
+
+  /* QUALITÄT */
+  .quality { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .q-copy { display: grid; gap: 1rem; align-content: center; justify-items: start; padding: clamp(32px, 4vw, 48px); border-radius: var(--r-xl); background: var(--ink); color: #fff; }
+  .q-copy .eyebrow { color: var(--sun-2); }
+  .q-copy .lead { color: rgba(255, 255, 255, 0.7); font-size: 1.05rem; }
+  .q-cells { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+  .q-cells li { display: grid; gap: 0.3rem; align-content: center; padding: 26px 28px; border-radius: var(--r-xl); background: var(--tile); }
+  .q-cells .mono { font-family: var(--f-ui); color: #b8822a; font-size: 0.82rem; font-weight: 600; }
+  .q-cells strong { font-weight: 600; font-size: 1.12rem; letter-spacing: -0.02em; }
+  .q-cells li > span:last-child { color: var(--muted); font-size: 0.9rem; }
+
+  /* KARTE */
+  .reach-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
+  .reach-map { padding: clamp(24px, 4vw, 48px); border-radius: var(--r-xl); background: var(--tile); }
+  .reach-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-content: start; }
+  .reach-list > div { display: grid; gap: 0.5rem; align-content: start; padding: 24px; border-radius: var(--r-xl); background: var(--tile); }
+  .reach-list .mono { font-family: var(--f-ui); color: var(--ink); font-size: 0.95rem; font-weight: 600; }
+  .reach-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; font-size: 0.92rem; color: var(--muted); }
+  .reach-list .placeholder-note { grid-column: 1 / -1; margin: 0; padding: 0 4px; }
+
+  /* SHOP-HINWEIS */
+  .shopline { display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: var(--section); padding-top: 32px; padding-bottom: 32px; border-radius: var(--r-xl); background: var(--tile); }
+  .shopline { width: calc(100% - 2 * var(--gutter)); max-width: calc(1100px - 2 * var(--gutter)); padding: 32px 36px; }
+  .shopline > div { display: grid; gap: 0.4rem; }
+
+  /* ABSCHLUSS: schwarzer Kontrastabschnitt */
+  .final { position: relative; max-width: none; margin-top: var(--section); padding-top: clamp(104px, 13vw, 176px); padding-bottom: clamp(96px, 12vw, 152px); overflow: hidden; text-align: center; background: #000; color: #fff; }
+  .final-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.32; filter: grayscale(0.4); }
+  .final-glow { position: absolute; inset: 0; background: radial-gradient(50% 60% at 50% 0%, rgba(224, 166, 63, 0.45), transparent 70%), linear-gradient(180deg, rgba(0, 0, 0, 0.2), #000 96%); }
+  .final-inner { position: relative; display: grid; justify-items: center; gap: 1.2rem; max-width: 1100px; margin: 0 auto; }
+  .final-inner .lead { max-width: 46ch; color: rgba(255, 255, 255, 0.72); }
+  .final-inner .hero-ctas { animation: none; }
+  .final-sun { width: 44px; height: 44px; color: var(--sun-2); animation: spin 40s linear infinite; }
+  .contact-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1100px; padding: 48px var(--gutter) 0; }
+  .contact-strip > div { display: grid; gap: 0.25rem; padding: 20px 22px; border-radius: 20px; background: var(--tile); font-size: 0.95rem; font-weight: 500; }
+  .contact-strip .mono { font-family: var(--f-ui); color: var(--muted); font-size: 0.78rem; font-weight: 400; }
+  .contact-strip a:hover { color: #b8822a; }
+
+  @media (max-width: 1000px) {
+    .sol-grid, .eco-grid, .range-grid { grid-template-columns: 1fr 1fr; }
+    .how-head, .quality, .reach-grid { grid-template-columns: 1fr; }
+    .how-panel { grid-template-columns: 1fr; }
+    .how-visual { min-height: 440px; }
+    .seg-body { grid-template-columns: 1fr; }
+    .contact-strip { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 700px) {
+    .hero-media { aspect-ratio: 4 / 5; }
+    .hero-stats { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ch-grid { grid-template-columns: 1fr; }
+    .ch-lines, .ch-nodes { display: none; }
+    .sol-grid { grid-template-columns: 1fr; }
+    .sol-img { aspect-ratio: 16 / 10; }
+    .eco-grid { grid-template-columns: 1fr; }
+    .eco-cell { min-height: 0; }
+    .tab { padding: 10px 8px; font-size: 0.85rem; }
+    .tab .mono { display: none; }
+    .seg-imgs { grid-template-columns: 1fr; }
+    .seg-imgs div + div { display: none; }
+    .seg-points { grid-template-columns: 1fr; }
+    .rc-body h3 { font-size: 1rem; }
+    .rc-body { padding: 0 16px 18px; }
+    .rc-cta { padding: 20px; }
+    .rc-cta h3 { font-size: 1.1rem; }
+    .msg { font-size: 0.76rem; }
+    .how-text { padding: 28px 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .w > span, .hero-media { animation: none; }
+    .hero-media { transform: none; }
+    .ch-flow { display: none; }
+  }
+</style>
+
+<script>
+  // Hero: Videokachel zieht sich beim Scrollen auf volle Breite auf (nur transform)
+  const stage = document.querySelector<HTMLElement>('[data-stage] .hero-media');
+  if (stage && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let queued = false;
+    const grow = () => {
+      queued = false;
+      const r = stage.parentElement!.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / (window.innerHeight * 0.9)));
+      stage.style.setProperty('--s', String(0.92 + 0.08 * p));
+    };
+    window.addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(grow); } }, { passive: true });
+    grow();
+  }
+
+  // Manifest: Wörter leuchten nacheinander auf, gekoppelt an den Scrollfortschritt
+  const scrub = document.querySelector<HTMLElement>('[data-scrub]');
+  if (scrub) {
+    const words = [...scrub.querySelectorAll<HTMLElement>('.mw')];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) words.forEach((w) => w.classList.add('on'));
+    else {
+      let active = false;
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const r = scrub.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const p = Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height * 0.9)));
+        const lit = Math.round(p * words.length);
+        words.forEach((w, i) => w.classList.toggle('on', i < lit));
+      };
+      const onScroll = () => { if (active && !ticking) { ticking = true; requestAnimationFrame(update); } };
+      new IntersectionObserver(([e]) => { active = e.isIntersecting; if (active) update(); }).observe(scrub);
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+  }
+
+  // Tabs mit automatischem Weiterschalten (Fortschrittsbalken), pausiert außerhalb des Viewports
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const auto = root.dataset.tabs === 'how' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    const show = (i: number, focus = false) => {
+      current = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, k) => { t.setAttribute('aria-selected', String(k === current)); t.tabIndex = k === current ? 0 : -1; });
+      panels.forEach((p, k) => (p.hidden = k !== current));
+      if (focus) tabs[current].focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => show(i));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') show(current + 1, true);
+        if (e.key === 'ArrowLeft') show(current - 1, true);
+      });
+      if (auto) t.querySelector('.tab-bar i')?.addEventListener('animationend', () => show(current + 1));
+    });
+    show(0);
+    if (auto) {
+      root.classList.add('is-paused');
+      new IntersectionObserver(([e]) => root.classList.toggle('is-paused', !e.isIntersecting), { threshold: 0.35 }).observe(root);
+    } else {
+      root.querySelectorAll<HTMLElement>('.tab-bar').forEach((b) => (b.style.display = 'none'));
+    }
+  });
+
+  // Hintergrundvideos nur abspielen, wenn sichtbar (spart Akku und Daten)
+  document.querySelectorAll<HTMLVideoElement>('video[autoplay]').forEach((v) => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); v.pause(); return; }
+    new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }).observe(v);
+  });
+</script>

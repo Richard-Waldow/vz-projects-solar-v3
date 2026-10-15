@@ -1,0 +1,171 @@
+---
+import { u } from '../lib/url';
+import type { Product, CategoryId } from '../data/products';
+import { categories } from '../data/products';
+import { brandById } from '../data/brands';
+import ProductCard from './ProductCard.astro';
+import Icon from './Icon.astro';
+
+interface Props { products: Product[]; fixedCategory?: CategoryId }
+const { products, fixedCategory } = Astro.props;
+const brandIds = [...new Set(products.map((p) => p.brand))].sort((a, b) => brandById[a].name.localeCompare(brandById[b].name));
+const uses = ['Wohngebäude', 'Gewerbe', 'Freifläche'];
+---
+
+<div class="catalog" data-catalog data-fixed={fixedCategory ?? ''}>
+  <div class="cat-bar">
+    <div class="cat-bar-inner">
+      {!fixedCategory && (
+        <div class="cat-chips" role="group" aria-label="Kategorie filtern">
+          <label class="pill-toggle"><input type="radio" name="kategorie" value="" checked /><span>Alle</span></label>
+          {categories.map((c) => (
+            <label class="pill-toggle"><input type="radio" name="kategorie" value={c.id} /><span>{c.name}</span></label>
+          ))}
+        </div>
+      )}
+      <div class="cat-tools">
+        <label class="cat-search">
+          <Icon name="search" />
+          <span class="sr-only">Produkte durchsuchen</span>
+          <input type="search" placeholder="Modell, Hersteller, Technologie …" data-q />
+        </label>
+        <label class="sr-only" for="f-brand">Hersteller</label>
+        <select id="f-brand" class="select cat-select" data-brand-filter>
+          <option value="">Alle Hersteller</option>
+          {brandIds.map((b) => <option value={b}>{brandById[b].name}</option>)}
+        </select>
+        <label class="sr-only" for="f-use">Einsatzbereich</label>
+        <select id="f-use" class="select cat-select" data-use-filter>
+          <option value="">Alle Einsatzbereiche</option>
+          {uses.map((u) => <option value={u}>{u}</option>)}
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-meta">
+    <span class="mono"><span data-count>{products.length}</span> Produktlinien</span>
+    <button type="button" class="cat-reset" data-reset hidden>Filter zurücksetzen</button>
+  </div>
+
+  <div class="cat-grid">
+    {products.map((p, i) => <ProductCard product={p} index={i} />)}
+  </div>
+
+  <div class="cat-empty" data-empty hidden>
+    <h3 class="h3">Nichts gefunden.</h3>
+    <p>Das gesuchte Produkt ist nicht dabei? Wir beschaffen auch Ware außerhalb des Katalogs.</p>
+    <a href={u("/anfrage")} class="btn btn--sm">Individuell anfragen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+  </div>
+</div>
+
+<style>
+  .cat-bar { position: sticky; top: 88px; z-index: 20; margin: 0 calc(var(--gutter) * -0.5); }
+  .cat-bar-inner {
+    display: grid;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 1.6rem;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: inset 0 0 0 1px var(--line), 0 20px 40px -30px rgba(0, 0, 0, 0.35);
+  }
+  .cat-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+  .cat-chips::-webkit-scrollbar { display: none; }
+  .cat-chips .pill-toggle span { white-space: nowrap; background: var(--white); }
+  .cat-chips .pill-toggle input:checked + span { background: var(--navy); color: var(--white); }
+  .cat-tools { display: grid; grid-template-columns: 1fr 220px 220px; gap: 8px; }
+  .cat-search { position: relative; display: flex; align-items: center; }
+  .cat-search :global(svg) { position: absolute; left: 16px; width: 17px; height: 17px; color: var(--muted); pointer-events: none; }
+  .cat-search input { width: 100%; min-height: 48px; padding: 0 1rem 0 2.8rem; border: 0; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1px var(--line-2); font-size: 16px; transition: box-shadow 0.4s var(--ease); }
+  .cat-search input:focus { outline: none; box-shadow: inset 0 0 0 1.5px var(--navy-3), 0 0 0 4px rgba(0, 0, 0, 0.1); }
+  .cat-select { min-height: 48px; border-radius: 999px; background-color: var(--white); padding-top: 0.6rem; padding-bottom: 0.6rem; font-size: 0.92rem; }
+  .cat-meta { display: flex; justify-content: space-between; align-items: center; padding: 28px 4px 18px; color: var(--muted); }
+  .cat-reset { border: 0; background: none; color: var(--navy); font-size: 0.85rem; text-decoration: underline; text-underline-offset: 3px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 14px; }
+  .cat-grid :global(.pcard[hidden]) { display: none; }
+  .cat-grid :global(.pcard.is-filtered) { animation: cat-in 220ms var(--ease-ui) both; }
+  @keyframes cat-in { from { opacity: 0; transform: translateY(6px); } }
+  .cat-empty { display: grid; gap: 1rem; justify-items: start; padding: 48px; border-radius: var(--r-xl); background: var(--white); box-shadow: inset 0 0 0 1px var(--line); }
+  .cat-empty p { margin: 0; color: var(--muted); }
+  @media (max-width: 860px) {
+    .cat-tools { grid-template-columns: 1fr 1fr; }
+    .cat-search { grid-column: 1 / -1; }
+    .cat-bar { position: static; margin: 0; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-catalog]');
+  if (root) {
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-product]')];
+    const q = root.querySelector<HTMLInputElement>('[data-q]')!;
+    const brand = root.querySelector<HTMLSelectElement>('[data-brand-filter]')!;
+    const use = root.querySelector<HTMLSelectElement>('[data-use-filter]')!;
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+    const reset = root.querySelector<HTMLButtonElement>('[data-reset]')!;
+    const radios = [...root.querySelectorAll<HTMLInputElement>('input[name="kategorie"]')];
+
+    const params = new URLSearchParams(location.search);
+    const init = { kategorie: params.get('kategorie') ?? '', marke: params.get('marke') ?? '', einsatz: params.get('einsatz') ?? '', q: params.get('q') ?? '' };
+    radios.forEach((r) => (r.checked = r.value === init.kategorie));
+    if (init.marke) brand.value = init.marke;
+    if (init.einsatz) use.value = init.einsatz;
+    q.value = init.q;
+
+    const apply = () => {
+      const cat = radios.find((r) => r.checked)?.value ?? '';
+      const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let n = 0;
+      cards.forEach((c) => {
+        const ok =
+          (!cat || c.dataset.category === cat) &&
+          (!brand.value || c.dataset.brand === brand.value) &&
+          (!use.value || (c.dataset.uses ?? '').split('|').includes(use.value)) &&
+          terms.every((t) => (c.dataset.search ?? '').includes(t));
+        c.hidden = !ok;
+        if (ok) n++;
+      });
+      count.textContent = String(n);
+      empty.hidden = n > 0;
+      reset.hidden = !(cat || brand.value || use.value || terms.length);
+
+      const p = new URLSearchParams();
+      if (cat) p.set('kategorie', cat);
+      if (brand.value) p.set('marke', brand.value);
+      if (use.value) p.set('einsatz', use.value);
+      if (q.value.trim()) p.set('q', q.value.trim());
+      history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
+    };
+
+    // Nach Kategorie-/Marken-Wechsel kurz einblenden, beim Tippen nicht
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const animateIn = () => {
+      if (reduced.matches) return;
+      cards.filter((c) => !c.hidden).slice(0, 8).forEach((c, i) => {
+        c.classList.remove('is-filtered');
+        void c.offsetWidth;
+        c.style.animationDelay = `${i * 25}ms`;
+        c.classList.add('is-filtered');
+      });
+    };
+    cards.forEach((c) => c.addEventListener('animationend', (e) => e.target === c && c.classList.remove('is-filtered')));
+
+    root.addEventListener('change', (e) => {
+      apply();
+      if (e.target !== q) animateIn();
+    });
+    q.addEventListener('input', apply);
+    reset.addEventListener('click', () => {
+      radios.forEach((r) => (r.checked = r.value === ''));
+      brand.value = '';
+      use.value = '';
+      q.value = '';
+      apply();
+      animateIn();
+    });
+    apply();
+  }
+</script>

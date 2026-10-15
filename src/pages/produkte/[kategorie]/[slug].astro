@@ -1,0 +1,149 @@
+---
+import { u } from '../../../lib/url';
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import ProductArt from '../../../components/ProductArt.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import BrandLogo from '../../../components/BrandLogo.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import { products, categoryById, productsByCategory, type Product } from '../../../data/products';
+import { brandById } from '../../../data/brands';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { kategorie: p.category, slug: p.slug }, props: { product: p } }));
+}
+
+const { product: p } = Astro.props as { product: Product };
+const brand = brandById[p.brand];
+const cat = categoryById[p.category];
+const variant = p.tags.includes('Full Black') ? 'black' : 'default';
+const siblings = productsByCategory(p.category).filter((x) => x.slug !== p.slug);
+const sameBrand = products.filter((x) => x.brand === p.brand && x.slug !== p.slug);
+const related = [...sameBrand.filter((x) => x.category !== p.category).slice(0, 1), ...siblings].slice(0, 4);
+---
+
+<Base title={`${brand.name} ${p.name}`} description={`${brand.name} ${p.name}: ${p.description}`}>
+  <section class="pd">
+    <div class="container">
+      <nav class="crumbs reveal" aria-label="Brotkrümel">
+        <a href={u("/")}>Start</a><span aria-hidden="true">/</span>
+        <a href={u("/produkte")}>Produkte</a><span aria-hidden="true">/</span>
+        <a href={u(`/produkte/${cat.id}`)}>{cat.name}</a><span aria-hidden="true">/</span>
+        <span aria-current="page">{p.name}</span>
+      </nav>
+
+      <div class="pd-grid">
+        <div class="pd-visual reveal">
+          <div class="bezel">
+            <div class="bezel-core pd-art">
+              <ProductArt category={p.category} variant={variant} seed={1} cover />
+              <span class="pd-logo"><BrandLogo id={p.brand} /></span>
+            </div>
+          </div>
+          <ul class="pd-facts">
+            <li><Icon name="shield" /><span>Original-Herstellerware mit voller Garantie</span></li>
+            <li><Icon name="doc" /><span>Datenblatt & Zertifikate auf Anfrage</span></li>
+            <li><Icon name="truck" /><span>Projektmengen palettiert, bundesweit</span></li>
+          </ul>
+        </div>
+
+        <div class="pd-info reveal" style="--d:120ms">
+          <div class="pd-brand">
+            <span class="mono">{brand.name} · {p.series}</span>
+          </div>
+          <h1 class="pd-title">{p.name}</h1>
+          <p class="lead">{p.description}</p>
+          <div class="pd-tags">
+            {p.tags.map((t) => <span class="chip">{t}</span>)}
+            {p.uses.map((u) => <span class="chip chip--sun">{u}</span>)}
+          </div>
+
+          <div class="pd-specs">
+            <h2 class="mono">Technische Daten</h2>
+            <dl>
+              <div><dt>Hersteller</dt><dd>{brand.name}</dd></div>
+              <div><dt>Kategorie</dt><dd>{cat.singular}</dd></div>
+              {p.specs.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}
+            </dl>
+            <p class="pd-note">Angaben gerundet und ohne Gewähr. Maßgeblich ist das aktuelle Herstellerdatenblatt.</p>
+          </div>
+
+          <div class="pd-actions">
+            <button
+              type="button"
+              class="btn pd-add"
+              data-add
+              data-slug={p.slug}
+              data-name={p.name}
+              data-brand={brand.name}
+              data-category={cat.singular}
+            >
+              <span class="swap"><span>Zur Anfrageliste</span><span>Nochmal hinzufügen</span></span>
+              <span class="btn-icon"><Icon name="plus" /></span>
+            </button>
+            <a href={u(`/anfrage?produkt=${p.slug}`)} class="btn btn--ghost">Direkt anfragen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+          </div>
+          <p class="pd-price"><Icon name="bag" /> Preise erhalten Sie mit dem Angebot. Der Online-Shop mit Händlerpreisen startet bald.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="container rel">
+      <div class="rel-head">
+        <h2 class="h2">Passt <em>dazu.</em></h2>
+        <a href={u(`/produkte/${cat.id}`)} class="link-arrow">Alle {cat.name} <Icon name="arrow-right" /></a>
+      </div>
+      <div class="rel-grid">
+        {related.map((r, i) => <ProductCard product={r} index={i} />)}
+      </div>
+    </section>
+  )}
+
+  <CtaBand />
+</Base>
+
+<style>
+  .pd { position: relative; padding: clamp(124px, 14vw, 164px) 0 0; }
+  .pd::before { content: ''; position: absolute; top: -20%; left: -15%; width: 60vw; aspect-ratio: 1; max-width: 900px; background: radial-gradient(circle, rgba(244, 226, 187, 0.65), transparent 62%); pointer-events: none; }
+  .crumbs { position: relative; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 32px; font-size: 0.82rem; color: var(--muted); }
+  .crumbs a:hover { color: var(--ink); }
+  .crumbs [aria-current] { color: var(--ink); }
+  .pd-grid { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: start; }
+  .pd-visual { position: sticky; top: 108px; display: grid; gap: 14px; }
+  .pd-art { position: relative; aspect-ratio: 1 / 0.86; display: flex; }
+  .pd-art :global(.art) { height: 100%; }
+  .pd-logo { position: absolute; left: 18px; top: 18px; display: flex; align-items: center; height: 48px; max-width: 50%; padding: 10px 16px; border-radius: 999px; background: rgba(255, 255, 255, 0.94); box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.3); }
+  .pd-logo :global(.blogo) { max-height: 26px; }
+  .pd-facts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pd-facts li { display: grid; gap: 0.5rem; padding: 14px; border-radius: 1rem; background: var(--white); box-shadow: inset 0 0 0 1px var(--line); font-size: 0.78rem; line-height: 1.4; color: var(--muted); }
+  .pd-facts :global(svg) { width: 18px; height: 18px; color: var(--sun); }
+  .pd-info { display: grid; gap: 1.5rem; }
+  .pd-brand { color: var(--sun); text-transform: uppercase; letter-spacing: 0.12em; }
+  .pd-title { margin: -0.6rem 0 0; font-family: var(--f-display); font-weight: 500; font-size: clamp(2.4rem, 4.2vw, 3.8rem); line-height: 1; letter-spacing: -0.02em; }
+  .pd-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pd-specs { padding: 24px; border-radius: var(--r-lg); background: var(--white); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft); }
+  .pd-specs h2 { margin: 0 0 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+  .pd-specs dl { margin: 0; display: grid; }
+  .pd-specs dl div { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1rem; padding: 0.8rem 0; border-top: 1px dashed var(--line-2); font-size: 0.9rem; }
+  .pd-specs dt { color: var(--muted); }
+  .pd-specs dd { margin: 0; font-family: var(--f-mono); font-size: 0.84rem; }
+  .pd-note { margin: 12px 0 0; font-size: 0.72rem; color: var(--muted); }
+  .pd-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .pd-price { display: flex; gap: 0.6rem; align-items: center; margin: 0; font-size: 0.84rem; color: var(--muted); }
+  .pd-price :global(svg) { width: 18px; height: 18px; flex: none; color: var(--sun); }
+  .rel { padding-top: clamp(80px, 10vw, 140px); }
+  .rel-head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 32px; }
+  .rel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  @media (max-width: 1080px) { .rel-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 900px) {
+    .pd-grid { grid-template-columns: 1fr; }
+    .pd-visual { position: static; }
+  }
+  @media (max-width: 600px) {
+    .pd-facts { grid-template-columns: 1fr; }
+    .rel-grid { grid-template-columns: 1fr; }
+    .rel-head { flex-direction: column; align-items: flex-start; }
+  }
+</style>

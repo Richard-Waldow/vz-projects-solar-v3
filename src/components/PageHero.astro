@@ -1,0 +1,36 @@
+---
+import { u } from '../lib/url';
+interface Props { eyebrow: string; title: string; lead?: string; crumbs?: { href: string; label: string }[] }
+const { eyebrow, title, lead, crumbs } = Astro.props;
+---
+
+<section class="phero">
+  <div class="container">
+    {crumbs && (
+      <nav class="crumbs reveal" aria-label="Brotkrümel">
+        <a href={u("/")}>Start</a>
+        {crumbs.map((c) => (<><span aria-hidden="true">/</span><a href={u(c.href)}>{c.label}</a></>))}
+      </nav>
+    )}
+    <div class="phero-grid">
+      <div class="phero-head reveal">
+        <span class="eyebrow">{eyebrow}</span>
+        <h1 class="display" set:html={title} />
+      </div>
+      {lead && <p class="lead reveal" style="--d:120ms">{lead}</p>}
+    </div>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .phero { position: relative; padding: clamp(132px, 15vw, 176px) 0 clamp(40px, 5vw, 64px); }
+  .phero::before { content: ''; position: absolute; top: -30%; right: -15%; width: 60vw; aspect-ratio: 1; max-width: 900px; background: radial-gradient(circle, rgba(246, 231, 201, 0.55), transparent 62%); pointer-events: none; }
+  .crumbs { position: relative; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 28px; font-size: 0.82rem; color: var(--muted); }
+  .crumbs a:hover { color: var(--ink); }
+  .crumbs a:last-child { color: var(--ink); }
+  .phero-grid { position: relative; display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(24px, 5vw, 80px); align-items: end; }
+  .phero-head { display: grid; gap: 1.5rem; justify-items: start; }
+  .phero .display { font-size: clamp(2.6rem, 5.8vw, 5rem); }
+  @media (max-width: 900px) { .phero-grid { grid-template-columns: 1fr; } }
+</style>

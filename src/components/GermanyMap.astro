@@ -1,0 +1,83 @@
+---
+// Punktraster-Karte Deutschlands (vereinfachter Umriss), Lieferrouten animiert ab dem Firmensitz
+const outline: [number, number][] = [
+  [6.9, 53.6], [7.2, 53.72], [8.0, 53.72], [8.6, 53.9], [8.9, 54.05], [8.6, 54.3], [8.8, 54.6], [8.6, 54.92],
+  [9.45, 54.83], [10.0, 54.62], [10.9, 54.4], [10.85, 53.95], [11.5, 54.1], [12.1, 54.2], [12.9, 54.45],
+  [13.4, 54.65], [13.8, 54.2], [14.2, 53.92], [14.4, 53.3], [14.1, 52.9], [14.6, 52.6], [14.7, 52.1],
+  [14.6, 51.6], [15.0, 51.1], [14.3, 50.88], [13.5, 50.7], [12.9, 50.4], [12.1, 50.3], [12.5, 49.95],
+  [12.4, 49.7], [12.9, 49.35], [13.8, 48.8], [13.45, 48.5], [13.0, 48.25], [12.75, 47.7], [13.0, 47.5],
+  [12.2, 47.62], [11.1, 47.4], [10.5, 47.5], [10.1, 47.3], [9.6, 47.53], [8.6, 47.65], [7.6, 47.58],
+  [7.55, 48.1], [8.2, 48.98], [7.6, 49.08], [6.4, 49.2], [6.36, 49.47], [6.5, 49.8], [6.1, 50.15],
+  [6.4, 50.32], [6.0, 50.75], [5.95, 51.05], [6.2, 51.4], [5.95, 51.8], [6.8, 51.95], [7.05, 52.25],
+  [6.7, 52.5], [7.05, 52.65], [7.2, 53.25],
+];
+const cities: { n: string; lon: number; lat: number }[] = [
+  { n: 'Hamburg', lon: 10.0, lat: 53.55 }, { n: 'Berlin', lon: 13.4, lat: 52.52 }, { n: 'München', lon: 11.58, lat: 48.14 },
+  { n: 'Köln', lon: 6.96, lat: 50.94 }, { n: 'Frankfurt', lon: 8.68, lat: 50.11 }, { n: 'Stuttgart', lon: 9.18, lat: 48.78 },
+  { n: 'Leipzig', lon: 12.37, lat: 51.34 }, { n: 'Hannover', lon: 9.73, lat: 52.37 }, { n: 'Nürnberg', lon: 11.08, lat: 49.45 },
+  { n: 'Dresden', lon: 13.74, lat: 51.05 }, { n: 'Bremen', lon: 8.8, lat: 53.08 }, { n: 'Rostock', lon: 12.1, lat: 54.09 },
+  { n: 'Dortmund', lon: 7.47, lat: 51.51 }, { n: 'Freiburg', lon: 7.85, lat: 48.0 }, { n: 'Kiel', lon: 10.13, lat: 54.32 },
+  { n: 'Magdeburg', lon: 11.63, lat: 52.13 },
+];
+const hub = cities[0];
+const routes = ['Berlin', 'München', 'Köln', 'Frankfurt', 'Stuttgart', 'Leipzig', 'Dresden', 'Nürnberg'];
+
+const lon0 = 5.8, lon1 = 15.1, lat0 = 47.2, lat1 = 55.1;
+const k = Math.cos((51 * Math.PI) / 180);
+const W = 520;
+const H = Math.round((W * (lat1 - lat0)) / ((lon1 - lon0) * k));
+const px = (lon: number) => ((lon - lon0) / (lon1 - lon0)) * W;
+const py = (lat: number) => ((lat1 - lat) / (lat1 - lat0)) * H;
+
+const inside = (x: number, y: number) => {
+  let c = false;
+  for (let i = 0, j = outline.length - 1; i < outline.length; j = i++) {
+    const [xi, yi] = [px(outline[i][0]), py(outline[i][1])];
+    const [xj, yj] = [px(outline[j][0]), py(outline[j][1])];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+};
+const step = 9;
+const dots: [number, number][] = [];
+for (let y = step / 2; y < H; y += step) for (let x = step / 2; x < W; x += step) if (inside(x, y)) dots.push([x, y]);
+
+const hx = px(hub.lon), hy = py(hub.lat);
+const routePaths = routes.map((n, i) => {
+  const c = cities.find((c) => c.n === n)!;
+  const x = px(c.lon), y = py(c.lat);
+  const mx = (hx + x) / 2 + (y - hy) * 0.18, my = (hy + y) / 2 - (x - hx) * 0.18;
+  return { d: `M${hx.toFixed(1)} ${hy.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`, i };
+});
+---
+
+<svg class="gmap" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Karte Deutschland mit Lieferregionen">
+  <g class="gm-dots">{dots.map(([x, y]) => <rect x={x - 1.6} y={y - 1.6} width="3.2" height="3.2" />)}</g>
+  <g class="gm-routes">{routePaths.map((r) => <path d={r.d} pathLength="1" style={`--r:${r.i}`} />)}</g>
+  <g class="gm-cities">
+    {cities.map((c, i) => (
+      <g transform={`translate(${px(c.lon).toFixed(1)} ${py(c.lat).toFixed(1)})`} class:list={{ hub: c === hub }}>
+        <circle class="gm-pulse" r="9" style={`--c:${i}`} />
+        <rect x="-3.5" y="-3.5" width="7" height="7" />
+        {['Hamburg', 'Berlin', 'München', 'Köln', 'Frankfurt', 'Leipzig', 'Stuttgart'].includes(c.n) && <text x="10" y="4">{c.n}</text>}
+      </g>
+    ))}
+  </g>
+</svg>
+
+<style>
+  .gmap { width: 100%; height: auto; max-height: 620px; overflow: visible; }
+  .gm-dots rect { fill: #d2d2d7; }
+  .gm-routes path { fill: none; stroke: var(--sun); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 0.12 0.88; stroke-dashoffset: 1; opacity: 0.85; animation: route 3.6s linear infinite; animation-delay: calc(var(--r) * -0.45s); }
+  @keyframes route { to { stroke-dashoffset: 0; } }
+  .gm-cities rect { fill: var(--sun); }
+  .gm-cities .hub rect { fill: var(--ink); }
+  .gm-dots rect { rx: 1.6; }
+  .gm-pulse { fill: none; stroke: var(--sun); stroke-width: 1; opacity: 0; transform-box: fill-box; transform-origin: center; animation: pulse 3.2s var(--ease-out) infinite; animation-delay: calc(var(--c) * 0.2s); }
+  @keyframes pulse { 0% { opacity: 0.8; transform: scale(0.3); } 100% { opacity: 0; transform: scale(1.6); } }
+  .gm-cities text { fill: var(--ink); font-family: var(--f-ui); font-size: 11px; font-weight: 500; }
+  @media (prefers-reduced-motion: reduce) {
+    .gm-routes path { animation: none; stroke-dasharray: none; opacity: 0.35; }
+    .gm-pulse { display: none; }
+  }
+</style>

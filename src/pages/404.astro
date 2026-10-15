@@ -1,0 +1,25 @@
+---
+import { u } from '../lib/url';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Base title="Seite nicht gefunden">
+  <section class="nf">
+    <div class="container nf-inner">
+      <span class="eyebrow">Fehler 404</span>
+      <h1 class="display">Hier scheint<br /><em>keine Sonne.</em></h1>
+      <p class="lead">Die Seite gibt es nicht (mehr). Vielleicht hilft der Produktkatalog weiter.</p>
+      <div class="nf-actions">
+        <a href={u("/produkte")} class="btn">Zum Katalog <span class="btn-icon"><Icon name="arrow-right" /></span></a>
+        <a href={u("/")} class="btn btn--ghost">Startseite <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 90dvh; display: grid; align-items: center; padding: 140px 0 var(--section); }
+  .nf-inner { display: grid; gap: 1.6rem; justify-items: start; }
+  .nf-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+</style>

@@ -1,0 +1,71 @@
+---
+import { u } from '../../../lib/url';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Catalog from '../../../components/Catalog.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import ProductArt from '../../../components/ProductArt.astro';
+import BrandLogo from '../../../components/BrandLogo.astro';
+import { categories, productsByCategory, type Category } from '../../../data/products';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { kategorie: c.id }, props: { category: c } }));
+}
+
+const { category } = Astro.props as { category: Category };
+const items = productsByCategory(category.id);
+const brandIds = [...new Set(items.map((p) => p.brand))];
+const others = categories.filter((c) => c.id !== category.id);
+---
+
+<Base title={category.name} description={`${category.name} im PV-Großhandel: ${category.lead}`}>
+  <PageHero
+    eyebrow={`${String(items.length).padStart(2, '0')} Produktlinien`}
+    title={category.name.replace('&', '&amp;')}
+    lead={category.description}
+    crumbs={[{ href: '/produkte', label: 'Produkte' }, { href: `/produkte/${category.id}`, label: category.name }]}
+  >
+    <div class="cat-intro reveal" style="--d:180ms">
+      <div class="bezel cat-art"><div class="bezel-core"><ProductArt category={category.id} seed={2} cover /></div></div>
+      <div class="cat-brands">
+        <span class="mono">Hersteller in dieser Kategorie</span>
+        <ul>
+          {brandIds.map((b) => (
+            <li><a href={`?marke=${b}`} aria-label={`Nur ${b} anzeigen`}><BrandLogo id={b} mono /></a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </PageHero>
+
+  <section class="container">
+    <Catalog products={items} fixedCategory={category.id} />
+  </section>
+
+  <section class="container more">
+    <span class="mono">Weitere Sortimente</span>
+    <div class="more-row">
+      {others.map((c) => <a href={u(`/produkte/${c.id}`)} class="more-link">{c.name}</a>)}
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .cat-intro { position: relative; display: grid; grid-template-columns: 1fr 1.3fr; gap: 14px; margin-top: clamp(36px, 5vw, 64px); margin-bottom: 40px; }
+  .cat-art .bezel-core { aspect-ratio: 16 / 10; display: flex; }
+  .cat-art :global(.art) { height: 100%; }
+  .cat-brands { display: grid; align-content: center; gap: 22px; padding: clamp(24px, 3vw, 40px); border-radius: var(--r-xl); background: var(--white); box-shadow: inset 0 0 0 1px var(--line), var(--shadow-soft); color: var(--muted); }
+  .cat-brands ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .cat-brands a { display: flex; align-items: center; justify-content: center; height: 72px; padding: 14px 18px; border-radius: 1rem; background: var(--paper); transition: background-color 0.4s var(--ease); }
+  .cat-brands a:hover { background: var(--paper-2); }
+  .cat-brands a:hover :global(.blogo--mono) { filter: none; opacity: 1; }
+  .cat-brands a:hover :global(.blogo--light.blogo--mono) { filter: brightness(0); }
+  .cat-brands :global(.blogo) { max-height: 32px; }
+  .more { padding-top: clamp(64px, 8vw, 104px); display: grid; gap: 16px; color: var(--muted); }
+  .more-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .more-link { padding: 0.7rem 1.2rem; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font-family: var(--f-display); font-size: 1.3rem; font-weight: 600; transition: background-color 0.4s var(--ease), color 0.4s var(--ease); }
+  .more-link:hover { background: var(--navy); color: var(--white); }
+  @media (max-width: 900px) { .cat-intro { grid-template-columns: 1fr; } }
+</style>

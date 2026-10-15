@@ -1,0 +1,176 @@
+---
+import { u } from '../lib/url';
+import Icon from './Icon.astro';
+---
+
+<div class="drawer" data-drawer aria-hidden="true">
+  <div class="drawer-scrim" data-drawer-close></div>
+  <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="drawer-head">
+      <div>
+        <span class="eyebrow">Anfrageliste</span>
+        <h2 id="drawer-title" class="h3">Ihre Auswahl</h2>
+      </div>
+      <button class="drawer-x" type="button" data-drawer-close aria-label="Anfrageliste schließen"><Icon name="close" /></button>
+    </div>
+
+    <div class="drawer-empty" data-drawer-empty>
+      <p>Noch keine Produkte ausgewählt.</p>
+      <p class="muted">Fügen Sie im Katalog Produkte hinzu. Wir erstellen Ihnen ein Angebot zu Projektkonditionen.</p>
+      <a href={u("/produkte")} class="link-arrow">Zum Produktkatalog <Icon name="arrow-right" /></a>
+    </div>
+
+    <ul class="drawer-list" data-drawer-list></ul>
+
+    <div class="drawer-foot" data-drawer-foot>
+      <p class="muted">Mengen sind unverbindlich. Preise und Verfügbarkeit erhalten Sie mit dem Angebot.</p>
+      <a href={u("/anfrage")} class="btn">Anfrage stellen <span class="btn-icon"><Icon name="arrow-up-right" /></span></a>
+    </div>
+  </aside>
+</div>
+
+<div class="toast" data-toast role="status" aria-live="polite">
+  <span class="toast-dot"><Icon name="check" /></span>
+  <span data-toast-text>Zur Anfrageliste hinzugefügt</span>
+  <button type="button" data-list-open class="toast-link">Ansehen</button>
+</div>
+
+<style>
+  .drawer { position: fixed; inset: 0; z-index: 60; visibility: hidden; transition: visibility 0s linear 450ms; }
+  .drawer.is-open { visibility: visible; transition: visibility 0s; }
+  .drawer-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.32); opacity: 0; transition: opacity 300ms var(--ease-ui); }
+  .drawer.is-open .drawer-scrim { opacity: 1; }
+  .drawer-panel {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: min(460px, calc(100% - 24px));
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 28px;
+    border-radius: 1.75rem;
+    background: var(--white);
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.45), inset 0 0 0 1px var(--line);
+    transform: translateX(calc(100% + 24px));
+    transition: transform 450ms var(--ease);
+  }
+  .drawer.is-open .drawer-panel { transform: none; }
+  .drawer-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .drawer-head .h3 { margin-top: 0.8rem; }
+  .drawer-x { display: grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 50%; background: var(--paper); transition: transform 0.5s var(--ease); }
+  .drawer-x:hover { transform: rotate(90deg); }
+  .drawer-x :global(svg) { width: 16px; height: 16px; }
+  .drawer-empty { display: grid; gap: 0.6rem; align-content: start; padding: 24px; border-radius: 1.25rem; background: var(--paper); }
+  .drawer-empty p { margin: 0; }
+  .muted { color: var(--muted); font-size: 0.86rem; }
+  .drawer-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; display: grid; align-content: start; gap: 0.6rem; }
+  .drawer-foot { display: grid; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .drawer-foot .muted { margin: 0; }
+  .drawer-foot .btn { justify-content: space-between; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    z-index: 55;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 8px 8px 8px 10px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 0.88rem;
+    box-shadow: 0 24px 50px -20px rgba(0, 0, 0, 0.6);
+    transform: translate(-50%, calc(100% + 48px));
+    visibility: hidden;
+    transition: transform 400ms var(--ease), visibility 0s linear 400ms;
+  }
+  .toast.is-on { transform: translate(-50%, 0); visibility: visible; transition: transform 400ms var(--ease), visibility 0s; }
+  .toast-dot { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--sun); color: var(--ink); }
+  .toast-dot :global(svg) { width: 14px; height: 14px; }
+  .toast-link { border: 0; padding: 0.45rem 0.9rem; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: var(--white); font-size: 0.82rem; }
+</style>
+
+<style is:global>
+  .dl-item { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem 1rem; align-items: center; padding: 14px 16px; border-radius: 1rem; background: var(--paper);; transition: opacity 180ms var(--ease-ui), transform 180ms var(--ease-ui) }
+  .dl-item.is-leaving { opacity: 0; transform: scale(0.97); pointer-events: none; }
+  .dl-item .dl-brand { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .dl-item .dl-name { font-weight: 500; font-size: 0.94rem; line-height: 1.3; }
+  .dl-qty { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: var(--white); box-shadow: inset 0 0 0 1px var(--line); grid-row: span 2; }
+  .dl-qty button { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; }
+  .dl-qty button:hover { background: var(--paper); }
+  .dl-qty svg { width: 13px; height: 13px; }
+  .dl-qty input { width: 52px; border: 0; background: transparent; text-align: center; font-variant-numeric: tabular-nums; font-size: 0.9rem; -moz-appearance: textfield; }
+  .dl-qty input::-webkit-outer-spin-button, .dl-qty input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .dl-remove { justify-self: start; border: 0; background: none; padding: 0; font-size: 0.76rem; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+  .dl-remove:hover { color: var(--ink); }
+</style>
+
+<script>
+  import { readList, addItem, onListChange, renderItems, bindItemControls, type ListItem } from '../scripts/requestList';
+
+  const drawer = document.querySelector<HTMLElement>('[data-drawer]')!;
+  const list = drawer.querySelector<HTMLUListElement>('[data-drawer-list]')!;
+  const empty = drawer.querySelector<HTMLElement>('[data-drawer-empty]')!;
+  const foot = drawer.querySelector<HTMLElement>('[data-drawer-foot]')!;
+  const toast = document.querySelector<HTMLElement>('[data-toast]')!;
+  const toastText = toast.querySelector<HTMLElement>('[data-toast-text]')!;
+  let lastFocus: Element | null = null;
+
+  const sync = (items: ListItem[]) => {
+    const count = items.length;
+    document.querySelectorAll<HTMLElement>('[data-list-count]').forEach((el) => {
+      el.textContent = String(count);
+      el.classList.toggle('has-items', count > 0);
+    });
+    empty.hidden = items.length > 0;
+    foot.hidden = items.length === 0;
+    renderItems(list, items);
+    document.querySelectorAll<HTMLElement>('[data-add]').forEach((btn) => {
+      btn.classList.toggle('is-added', items.some((i) => i.slug === btn.dataset.slug));
+    });
+  };
+
+  const open = () => {
+    lastFocus = document.activeElement;
+    drawer.classList.add('is-open');
+    drawer.setAttribute('aria-hidden', 'false');
+    toast.classList.remove('is-on');
+    drawer.querySelector<HTMLElement>('.drawer-x')?.focus();
+  };
+  const close = () => {
+    drawer.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    (lastFocus as HTMLElement | null)?.focus?.();
+  };
+
+  document.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    if (t.closest('[data-list-open]')) { e.preventDefault(); open(); }
+    if (t.closest('[data-drawer-close]')) close();
+    const add = t.closest<HTMLElement>('[data-add]');
+    if (add) {
+      e.preventDefault();
+      const { slug, name, brand, category } = add.dataset;
+      addItem({ slug: slug!, name: name!, brand: brand!, category: category! });
+      toastText.textContent = `${name} hinzugefügt`;
+      document.querySelector('[data-header]')?.classList.remove('is-hidden');
+      toast.classList.add('is-on');
+      clearTimeout((window as any).__vzToast);
+      (window as any).__vzToast = setTimeout(() => toast.classList.remove('is-on'), 3200);
+      document.querySelectorAll('[data-list-count]').forEach((el) => {
+        el.classList.remove('bump');
+        void (el as HTMLElement).offsetWidth;
+        el.classList.add('bump');
+      });
+    }
+  });
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && drawer.classList.contains('is-open') && close());
+
+  bindItemControls(list);
+  onListChange(sync);
+  sync(readList());
+</script>

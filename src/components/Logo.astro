@@ -1,0 +1,67 @@
+---
+// Wortmarke nach dem bestehenden VZ-Projects-Solar-Logo: vZ | PROJECTS / SOLAR (Sonne als O)
+interface Props {
+  tone?: 'dark' | 'light';
+  size?: 'sm' | 'md' | 'lg';
+  gmbh?: boolean;
+}
+const { tone = 'dark', size = 'md', gmbh = false } = Astro.props;
+---
+
+<span class:list={['logo', `logo--${tone}`, `logo--${size}`]} aria-label="VZ Projects Solar GmbH">
+  <span class="logo-vz" aria-hidden="true">v<span>Z</span></span>
+  <span class="logo-bar" aria-hidden="true"></span>
+  <span class="logo-words" aria-hidden="true">
+    <span class="logo-projects">Projects</span>
+    <span class="logo-solar">
+      S<svg class="logo-sun" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="7.2" fill="none" stroke="currentColor" stroke-width="2.4"></circle>
+        <g stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <line x1="20" y1="2.5" x2="20" y2="8"></line><line x1="20" y1="32" x2="20" y2="37.5"></line>
+          <line x1="2.5" y1="20" x2="8" y2="20"></line><line x1="32" y1="20" x2="37.5" y2="20"></line>
+          <line x1="7.6" y1="7.6" x2="11.5" y2="11.5"></line><line x1="28.5" y1="28.5" x2="32.4" y2="32.4"></line>
+          <line x1="7.6" y1="32.4" x2="11.5" y2="28.5"></line><line x1="28.5" y1="11.5" x2="32.4" y2="7.6"></line>
+        </g>
+      </svg>LAR{gmbh && <small> GmbH</small>}
+    </span>
+  </span>
+</span>
+
+<style>
+  .logo { --s: 1; display: inline-flex; align-items: center; gap: calc(0.7rem * var(--s)); color: var(--navy); line-height: 1; user-select: none; }
+  .logo--sm { --s: 0.62; }
+  .logo--md { --s: 0.85; }
+  .logo--lg { --s: 1.5; }
+  .logo--light { color: var(--white); }
+  .logo-vz {
+    font-family: var(--f-script);
+    font-style: italic;
+    font-weight: 600;
+    font-size: calc(3.1rem * var(--s));
+    letter-spacing: -0.04em;
+    line-height: 0.8;
+    transform: translateY(calc(-0.06rem * var(--s)));
+  }
+  .logo-vz span { font-size: 1.12em; margin-left: -0.04em; }
+  .logo-bar { width: 1.2px; height: calc(3.3rem * var(--s)); background: currentColor; opacity: 0.85; }
+  .logo-words { display: grid; gap: calc(0.32rem * var(--s)); }
+  .logo-projects {
+    font-family: var(--f-logo);
+    font-weight: 700;
+    font-size: calc(1.72rem * var(--s));
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+  .logo-solar {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--f-logo);
+    font-weight: 600;
+    font-size: calc(1.2rem * var(--s));
+    letter-spacing: 0.06em;
+    color: var(--stone);
+  }
+  .logo--light .logo-solar { color: rgba(255, 255, 255, 0.72); }
+  .logo-sun { width: 1.05em; height: 1.05em; margin: 0 0.05em; color: var(--sun); }
+  .logo-solar small { font-size: 0.82em; letter-spacing: 0.02em; margin-left: 0.3em; text-transform: none; }
+</style>
