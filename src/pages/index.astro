@@ -27,10 +27,10 @@ const manifesto = [
 ].flat();
 
 const solutions = [
-  { t: 'Projektkonditionen', d: 'Verbindliche Angebote für Container- und Projektmengen. Per Telefon, E-Mail, WhatsApp oder direkt aus Ihrer Stückliste.', img: '/img/utility.jpg' },
-  { t: 'Herstellerunabhängig', d: `${brands.length} Marken im Sortiment. Wir empfehlen, was zum Projekt passt, und bieten Alternativen, wenn ein Hersteller knapp wird.`, img: '/img/field.jpg' },
-  { t: 'Logistik bis zur Baustelle', d: 'Direkt ab Hersteller- und Partnerlager: palettiert, avisiert und auf Wunsch in Teilabrufen.', img: '/img/roof.jpg' },
-  { t: 'Technische Prüfung', d: 'Wir prüfen Stücklisten auf Kompatibilität, damit Modul, Wechselrichter, Speicher und Unterkonstruktion zusammenpassen.', img: '/img/installer.jpg' },
+  { t: 'Projektkonditionen', d: 'Verbindliche Angebote für Container- und Projektmengen. Per Telefon, E-Mail, WhatsApp oder direkt aus Ihrer Stückliste.', img: '/images/utility.jpg' },
+  { t: 'Herstellerunabhängig', d: `${brands.length} Marken im Sortiment. Wir empfehlen, was zum Projekt passt, und bieten Alternativen, wenn ein Hersteller knapp wird.`, img: '/images/field.jpg' },
+  { t: 'Logistik bis zur Baustelle', d: 'Direkt ab Hersteller- und Partnerlager: palettiert, avisiert und auf Wunsch in Teilabrufen.', img: '/images/roof.jpg' },
+  { t: 'Technische Prüfung', d: 'Wir prüfen Stücklisten auf Kompatibilität, damit Modul, Wechselrichter, Speicher und Unterkonstruktion zusammenpassen.', img: '/images/installer.jpg' },
 ];
 
 const brandGroups = categories.map((c) => ({
@@ -50,21 +50,21 @@ const segments = [
     h: 'PV-Pakete für Ihr Endkundengeschäft',
     d: 'Standardisierte Anlagenpakete, Rahmenverträge mit planbaren Konditionen und ein fester Ansprechpartner, damit Ihr PV-Angebot skaliert.',
     points: ['Rahmenverträge & Abrufmengen', 'Paketierung nach Ihrem Portfolio', 'Herstellerunabhängige Beratung', 'Ein Ansprechpartner für alles'],
-    imgs: ['/img/commercial.jpg', '/img/aerial.jpg'],
+    imgs: ['/images/commercial.jpg', '/images/aerial.jpg'],
   },
   {
     k: 'epc', t: 'Projektentwickler & EPC',
     h: 'Containerware für Freifläche und Gewerbedach',
     d: 'Module, Wechselrichter, Unterkonstruktion und Kabel projektbezogen kalkuliert, inklusive Alternativen, wenn ein Hersteller knapp wird.',
     points: ['Projektpreise ab Containermenge', 'Stücklistenprüfung & Kompatibilität', 'Abgestimmte Lieferabrufe', 'Dokumentation & Zertifikate'],
-    imgs: ['/img/utility.jpg', '/img/field.jpg'],
+    imgs: ['/images/utility.jpg', '/images/field.jpg'],
   },
   {
     k: 'handwerk', t: 'Solarteure & Handwerk',
     h: 'Alles fürs Dach, aus einer Hand',
     d: 'Vom Modul bis zum MC4-Stecker: abgestimmte Komponenten für Wohn- und Gewerbeanlagen, inklusive Speicher, Wallbox und Wärmepumpe.',
     points: ['Komplettpakete fürs Einfamilienhaus', 'Speicher-, Wallbox- & WP-Kombis', 'Lieferung direkt zur Baustelle', 'Bald: Online-Shop'],
-    imgs: ['/img/installer.jpg', '/img/roof.jpg'],
+    imgs: ['/images/installer.jpg', '/images/roof.jpg'],
   },
 ];
 
@@ -100,8 +100,8 @@ const regions = [
 
     <div class="hero-stage" data-stage>
       <div class="hero-media">
-        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster={u('/video/hero-poster.jpg')} aria-hidden="true">
-          <source src={u('/video/hero.mp4')} type="video/mp4" />
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster={u('/media/hero-poster.jpg')} aria-hidden="true">
+          <source src={u('/media/hero.mp4')} type="video/mp4" />
         </video>
         <div class="hero-shade" aria-hidden="true"></div>
         <dl class="hero-stats">
@@ -238,7 +238,7 @@ const regions = [
             <p>{s.d}</p>
           </div>
           <div class="how-visual">
-            <img src={u(i === 0 ? '/img/installer.jpg' : i === 1 ? '/img/commercial.jpg' : '/img/utility.jpg')} alt="" loading="lazy" />
+            <img src={u(i === 0 ? '/images/installer.jpg' : i === 1 ? '/images/commercial.jpg' : '/images/utility.jpg')} alt="" loading="lazy" />
             {i === 0 && (
               <div class="chat" aria-hidden="true">
                 <p class="msg msg--in" style="--k:0">Hallo, habt ihr Module und Wechselrichter für 1,2 MWp Freifläche in Brandenburg?</p>
@@ -392,8 +392,8 @@ const regions = [
 
   <!-- ABSCHLUSS-CTA mit Lichtkegel -->
   <section class="final on-dark">
-    <video class="final-video" autoplay muted loop playsinline preload="none" poster={u('/video/topdown-poster.jpg')} aria-hidden="true">
-      <source src={u('/video/topdown.mp4')} type="video/mp4" />
+    <video class="final-video" autoplay muted loop playsinline preload="none" poster={u('/media/topdown-poster.jpg')} aria-hidden="true">
+      <source src={u('/media/topdown.mp4')} type="video/mp4" />
     </video>
     <div class="final-glow" aria-hidden="true"></div>
     <div class="final-inner reveal">
@@ -640,9 +640,9 @@ const regions = [
   .shopline > div { display: grid; gap: 0.4rem; }
 
   /* ABSCHLUSS: schwarzer Kontrastabschnitt */
-  .final { position: relative; max-width: none; margin-top: var(--section); padding-top: clamp(104px, 13vw, 176px); padding-bottom: clamp(96px, 12vw, 152px); overflow: hidden; text-align: center; background: var(--deep); color: #fff; }
-  .final-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.32; filter: grayscale(0.4); }
-  .final-glow { position: absolute; inset: 0; background: radial-gradient(50% 60% at 50% 0%, rgba(59, 120, 208, 0.45), transparent 70%), linear-gradient(180deg, rgba(7, 19, 40, 0.2), var(--deep) 96%); }
+  .final { position: relative; max-width: none; margin-top: var(--section); padding-top: clamp(104px, 13vw, 176px); padding-bottom: clamp(96px, 12vw, 152px); overflow: hidden; text-align: center; background: #000; color: #fff; }
+  .final-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
+  .final-glow { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55) 55%, #000 98%); }
   .final-inner { position: relative; display: grid; justify-items: center; gap: 1.2rem; max-width: 1100px; margin: 0 auto; }
   .final-inner .lead { max-width: 46ch; color: rgba(255, 255, 255, 0.72); }
   .final-inner .hero-ctas { animation: none; }

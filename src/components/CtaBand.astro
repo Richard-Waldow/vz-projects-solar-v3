@@ -12,7 +12,7 @@ const {
 <section class="cta-band">
   <div class="container">
     <div class="cta-card on-dark reveal">
-      <img src={u("/img/sky.jpg")} alt="" loading="lazy" class="cta-bg" />
+      <img src={u("/images/sky.jpg")} alt="" loading="lazy" class="cta-bg" />
       <div class="cta-copy">
         <h2 class="h2" set:html={title} />
         <p class="lead">{text}</p>
@@ -28,8 +28,8 @@ const {
 <style>
   .cta-band { padding: clamp(64px, 9vw, 120px) 0 calc(var(--section) * 0.8); }
   .cta-card { position: relative; display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: end; padding: clamp(36px, 6vw, 72px); border-radius: 2.5rem; background: var(--navy); color: var(--white); overflow: hidden; isolation: isolate; }
-  .cta-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.2; mix-blend-mode: luminosity; z-index: -1; }
-  .cta-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, var(--navy) 30%, rgba(0, 0, 0, 0.4)); z-index: -1; }
+  .cta-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .cta-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, rgba(0, 0, 0, 0.82) 25%, rgba(0, 0, 0, 0.35)); z-index: -1; }
   .cta-copy { display: grid; gap: 1.2rem; }
   .cta-copy .lead { color: rgba(255, 255, 255, 0.7); }
   .cta-card :global(.h2 em) { color: var(--sun-2); }
