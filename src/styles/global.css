@@ -3,23 +3,24 @@
 :root {
   /* v3 „Apple“: Weiß, Schwarz, viel Luft. Gold nur als Akzent der Marke */
   --paper: #ffffff;
-  --paper-2: #f5f5f7;
-  --paper-3: #e8e8ed;
+  --paper-2: #f4f6fa;
+  --paper-3: #e6eaf2;
   --white: #ffffff;
-  --tile: #f5f5f7;
-  --ink: #1d1d1f;
-  --navy: #1d1d1f;
-  --navy-2: #000000;
-  --navy-3: #1d1d1f;
-  --stone: #86868b;
-  --muted: #6e6e73;
-  --sun: #c8953a;
-  --sun-2: #dcae5c;
-  --sun-3: #f6ecd8;
+  --tile: #f3f5f9;
+  --ink: #0b1220;
+  --navy: #10264a;
+  --navy-2: #0a1b36;
+  --navy-3: #1d3d70;
+  --stone: #8a93a3;
+  --muted: #5d6779;
+  --sun: #2a5aa8;
+  --sun-2: #8fb3ea;
+  --sun-3: #e5edf9;
   --line: rgba(0, 0, 0, 0.08);
   --line-2: rgba(0, 0, 0, 0.14);
   --line-inv: rgba(255, 255, 255, 0.16);
-  --grad: linear-gradient(90deg, #b8822a 0%, #e0a63f 45%, #f08a3c 100%);
+  --grad: linear-gradient(90deg, #10264a 0%, #1f4a8a 45%, #3b78d0 100%);
+  --deep: #071328;
 
   --f-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', sans-serif;
   --f-logo: 'Cinzel', 'Trajan Pro', serif;
@@ -30,11 +31,11 @@
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-ui: cubic-bezier(0.23, 1, 0.32, 1);
-  --r-xl: 28px;
-  --r-lg: 18px;
+  --r-xl: 22px;
+  --r-lg: 14px;
   --r-md: 12px;
   --gutter: clamp(16px, 4vw, 40px);
-  --section: clamp(88px, 11vw, 160px);
+  --section: clamp(80px, 10vw, 140px);
   --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.04), 0 18px 40px -18px rgba(0, 0, 0, 0.14);
 }
 
@@ -130,7 +131,7 @@ input, select, textarea { font: inherit; color: inherit; }
   height: 6px;
   border-radius: 50%;
   background: var(--sun);
-  box-shadow: 0 0 0 3px rgba(200, 149, 58, 0.18);
+  box-shadow: 0 0 0 3px rgba(42, 90, 168, 0.18);
 }
 .on-dark .eyebrow { background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 1px var(--line-inv); color: var(--sun-3); }
 
@@ -168,7 +169,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .btn:hover { background: var(--navy-2); }
 @media (hover: hover) and (pointer: fine) { .btn:hover .btn-icon { transform: translate(3px, -1px) scale(1.06); } }
 .btn:active { transform: scale(0.98); }
-.btn--sun { --btn-bg: var(--sun); --btn-fg: var(--ink); --btn-icon-bg: rgba(0, 0, 0, 0.1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 10px 30px -12px rgba(200, 149, 58, 0.6); }
+.btn--sun { --btn-bg: var(--sun); --btn-fg: var(--ink); --btn-icon-bg: rgba(0, 0, 0, 0.1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 10px 30px -12px rgba(42, 90, 168, 0.6); }
 .btn--sun:hover { background: var(--sun-2); }
 .btn--ghost { --btn-bg: transparent; --btn-fg: var(--ink); --btn-icon-bg: rgba(0, 0, 0, 0.06); box-shadow: inset 0 0 0 1px var(--line-2); }
 .btn--ghost:hover { background: rgba(0, 0, 0, 0.04); }
@@ -209,7 +210,7 @@ input, select, textarea { font: inherit; color: inherit; }
   color: var(--navy-2);
   white-space: nowrap;
 }
-.chip--sun { background: var(--sun-3); color: #6d4c12; }
+.chip--sun { background: var(--sun-3); color: #173a6e; }
 
 /* Scroll-Reveal (nur mit JS, sonst sofort sichtbar) */
 .js .reveal {
@@ -319,11 +320,11 @@ input, select, textarea { font: inherit; color: inherit; }
    ───────────────────────────────────────────────────────────── */
 body { font-feature-settings: 'kern'; letter-spacing: -0.011em; }
 body::before { display: none; }
-::selection { background: rgba(200, 149, 58, 0.25); color: var(--ink); }
+::selection { background: rgba(42, 90, 168, 0.25); color: var(--ink); }
 :focus-visible { outline: 2px solid #0071e3; outline-offset: 3px; border-radius: 8px; }
 
-.display { font-weight: 600; font-size: clamp(2.8rem, 7vw, 5.8rem); line-height: 1.04; letter-spacing: -0.045em; }
-.h2 { font-weight: 600; font-size: clamp(2.2rem, 4.6vw, 3.9rem); line-height: 1.06; letter-spacing: -0.038em; }
+.display { font-weight: 600; font-size: clamp(2.6rem, 6.2vw, 5rem); line-height: 1.05; letter-spacing: -0.042em; }
+.h2 { font-weight: 600; font-size: clamp(2rem, 4vw, 3.3rem); line-height: 1.08; letter-spacing: -0.035em; }
 .h3 { font-weight: 600; font-size: clamp(1.3rem, 1.8vw, 1.6rem); line-height: 1.16; letter-spacing: -0.022em; }
 .display em, .h2 em, .h3 em, .grad {
   font-style: normal;
@@ -344,14 +345,14 @@ body::before { display: none; }
   font-weight: 600;
   letter-spacing: -0.01em;
   text-transform: none;
-  color: #b8822a;
+  color: #1f4a8a;
 }
 .on-dark .eyebrow { color: var(--sun-2); }
 .eyebrow::before { display: none; }
 
 /* Pill-Buttons */
 .btn, .btn--sun {
-  --btn-bg: var(--ink);
+  --btn-bg: var(--navy);
   --btn-fg: #fff;
   gap: 0.4rem;
   min-height: 44px;
@@ -362,16 +363,16 @@ body::before { display: none; }
   letter-spacing: -0.01em;
   box-shadow: none;
 }
-.btn:hover, .btn--sun:hover { background: #000; }
+.btn:hover, .btn--sun:hover { background: var(--navy-3); }
 .btn .btn-icon { display: none; }
-.btn--ghost { --btn-bg: transparent; --btn-fg: var(--ink); box-shadow: inset 0 0 0 1.2px var(--ink); }
-.btn--ghost:hover { background: var(--ink); color: #fff; }
+.btn--ghost { --btn-bg: transparent; --btn-fg: var(--navy); box-shadow: inset 0 0 0 1.2px var(--navy); }
+.btn--ghost:hover { background: var(--navy); color: #fff; }
 .on-dark .btn, .on-dark .btn--sun { --btn-bg: #fff; --btn-fg: var(--ink); }
 .on-dark .btn:hover, .on-dark .btn--sun:hover { background: #e8e8ed; }
 .on-dark .btn--ghost { --btn-bg: transparent; --btn-fg: #fff; box-shadow: inset 0 0 0 1.2px rgba(255, 255, 255, 0.8); }
 .on-dark .btn--ghost:hover { background: #fff; color: var(--ink); }
 .btn--sm { min-height: 36px; padding: 0 16px; font-size: 0.86rem; }
-.link-arrow { color: #b8822a; font-weight: 500; }
+.link-arrow { color: #1f4a8a; font-weight: 500; }
 .on-dark .link-arrow { color: var(--sun-2); }
 
 /* Kacheln statt Doppelrand */
@@ -380,16 +381,16 @@ body::before { display: none; }
 .on-dark .bezel > .bezel-core { background: rgba(255, 255, 255, 0.06); box-shadow: none; }
 
 .chip { border-radius: 980px; background: rgba(0, 0, 0, 0.05); color: var(--ink); font-size: 0.72rem; font-weight: 500; }
-.chip--sun { background: var(--sun-3); color: #8a5f17; }
+.chip--sun { background: var(--sun-3); color: #173a6e; }
 
 .input, .select, .textarea { border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px #d2d2d7; }
 .input:hover, .select:hover, .textarea:hover { box-shadow: inset 0 0 0 1px #86868b; }
 .input:focus, .select:focus, .textarea:focus { background: #fff; box-shadow: inset 0 0 0 1px #0071e3, 0 0 0 4px rgba(0, 113, 227, 0.16); }
 .field label, .field .label { color: var(--ink); font-weight: 500; }
 .pill-toggle span { border-radius: 980px; background: #fff; box-shadow: inset 0 0 0 1px #d2d2d7; }
-.pill-toggle input:checked + span { background: var(--ink); color: #fff; }
+.pill-toggle input:checked + span { background: var(--navy); color: #fff; }
 .check input { border-radius: 6px; }
-.check input:checked { background: var(--ink); }
+.check input:checked { background: var(--navy); }
 .check a { color: var(--ink); }
 
 /* Startseiten-Hilfsklassen (aus Version 2) */
